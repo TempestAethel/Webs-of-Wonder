@@ -60,6 +60,27 @@
             font-size: 2rem;
             animation: fall 3s forwards; /* Fall animation for letters */
         }
+
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: rgba(255, 165, 0, 0.8); /* Orange particles */
+            pointer-events: none; /* Ignore mouse events */
+            animation: particle-animation 1s forwards; /* Particle animation */
+        }
+
+        @keyframes particle-animation {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(0);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -71,19 +92,16 @@
         const board = document.getElementById('board');
 
         document.addEventListener('keydown', (event) => {
-            // Create a letter element that falls
             const letterElement = document.createElement('div');
             letterElement.className = 'letter';
             letterElement.innerText = event.key;
 
-            // Position the letter at a random horizontal position
             const randomX = Math.random() * (board.clientWidth - 50);
             letterElement.style.left = `${randomX}px`;
-            letterElement.style.top = `0px`; // Start from the top
+            letterElement.style.top = `0px`;
 
             board.appendChild(letterElement);
 
-            // Trigger the falling animation
             letterElement.animate([
                 { top: '0px' },
                 { top: '80%' }
@@ -92,28 +110,23 @@
                 fill: 'forwards'
             });
 
-            // Set a reference for the letter for later use
-            letterElement.dataset.active = true; // Keep track of active letters
+            letterElement.dataset.active = true;
         });
 
         board.addEventListener('click', (event) => {
-            // Create a bomb that falls from the click position
             const bomb = document.createElement('div');
             bomb.className = 'bomb';
-            bomb.style.left = `${event.clientX - 25}px`; // Center the bomb
-            bomb.style.top = `0px`; // Start from the top
+            bomb.style.left = `${event.clientX - 25}px`;
+            bomb.style.top = `0px`;
 
             board.appendChild(bomb);
 
-            // After the bomb explodes, remove letters nearby
             bomb.addEventListener('animationend', () => {
-                // Get all letter elements
                 const letters = document.querySelectorAll('.letter');
                 letters.forEach(letter => {
                     const letterRect = letter.getBoundingClientRect();
                     const bombRect = bomb.getBoundingClientRect();
 
-                    // Check if the letter is within a 100px radius of the bomb
                     const distance = Math.sqrt(
                         Math.pow(letterRect.x - bombRect.x, 2) + 
                         Math.pow(letterRect.y - bombRect.y, 2)
@@ -121,12 +134,35 @@
 
                     if (distance < 100) {
                         letter.remove(); // Remove the letter
+                        createParticles(letterRect.x + letterRect.width / 2, letterRect.y + letterRect.height / 2);
                     }
                 });
 
-                bomb.remove(); // Remove the bomb after explosion
+                bomb.remove();
             });
         });
+
+        function createParticles(x, y) {
+            for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                board.appendChild(particle);
+                
+                // Randomize the direction and distance
+                const angle = Math.random() * 2 * Math.PI;
+                const distance = Math.random() * 50;
+                
+                particle.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
+                
+                // Remove particle after animation
+                particle.addEventListener('animationend', () => {
+                    particle.remove();
+                });
+            }
+        }
     </script>
 </body>
 </html>
