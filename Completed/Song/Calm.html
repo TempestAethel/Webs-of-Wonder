@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calming Music Player</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        .dark {
+            background: linear-gradient(135deg, cyan, teal);
+            color: white;
+        }
+        .light {
+            background: linear-gradient(135deg, #f0f8ff, #b0e0e6);
+            color: black;
+        }
+        .toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        audio {
+            display: none;
+        }
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        .prev, .next {
+            cursor: pointer;
+            font-size: 24px;
+            color: inherit;
+        }
+    </style>
+</head>
+<body class="dark">
+    <button class="toggle">Toggle Theme</button>
+    <audio id="audio" autoplay loop></audio>
+    <div class="controls">
+        <div class="prev">❮</div>
+        <div class="next">❯</div>
+    </div>
+
+    <script>
+        const audio = document.getElementById('audio');
+        const toggle = document.querySelector('.toggle');
+        const prevButton = document.querySelector('.prev');
+        const nextButton = document.querySelector('.next');
+
+        let currentTrack = 0;
+        const tracks = Array.from({ length: 12 }, (_, i) => `Calm (${i + 1}).mp3`);
+
+        function loadTrack(trackIndex) {
+            audio.src = tracks[trackIndex];
+            audio.play();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            document.body.classList.toggle('light');
+        }
+
+        prevButton.addEventListener('click', () => {
+            currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+            loadTrack(currentTrack);
+        });
+
+        nextButton.addEventListener('click', () => {
+            currentTrack = (currentTrack + 1) % tracks.length;
+            loadTrack(currentTrack);
+        });
+
+        toggle.addEventListener('click', toggleTheme);
+
+        loadTrack(currentTrack); // Load the first track on startup
+    </script>
+</body>
+</html>
