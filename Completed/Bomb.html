@@ -38,7 +38,7 @@
             height: 50px;
             background-color: red;
             border-radius: 50%;
-            animation: fall 5s forwards, explode 0.5s forwards 5s; /* Fall then explode */
+            animation: fall 5s forwards; /* Fall */
         }
 
         @keyframes explode {
@@ -121,24 +121,24 @@
 
             board.appendChild(bomb);
 
+            // Check for collision with letters after bomb animation ends
             bomb.addEventListener('animationend', () => {
                 const letters = document.querySelectorAll('.letter');
                 letters.forEach(letter => {
                     const letterRect = letter.getBoundingClientRect();
                     const bombRect = bomb.getBoundingClientRect();
 
-                    const distance = Math.sqrt(
-                        Math.pow(letterRect.x - bombRect.x, 2) + 
-                        Math.pow(letterRect.y - bombRect.y, 2)
-                    );
-
-                    if (distance < 100) {
+                    // Check if the bomb overlaps with the letter
+                    if (bombRect.bottom > letterRect.top && 
+                        bombRect.top < letterRect.bottom && 
+                        bombRect.right > letterRect.left && 
+                        bombRect.left < letterRect.right) {
                         letter.remove(); // Remove the letter
                         createParticles(letterRect.x + letterRect.width / 2, letterRect.y + letterRect.height / 2);
                     }
                 });
 
-                bomb.remove();
+                bomb.remove(); // Remove the bomb after the explosion
             });
         });
 
