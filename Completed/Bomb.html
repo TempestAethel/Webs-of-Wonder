@@ -13,6 +13,7 @@
             margin: 0;
             background-color: #f0f0f0;
             font-family: Arial, sans-serif;
+            overflow: hidden; /* Prevent scrolling */
         }
 
         .board {
@@ -24,7 +25,7 @@
             background-color: #fff;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start; /* Align letters at the top */
         }
 
         h1 {
@@ -40,7 +41,7 @@
             height: 50px;
             background-color: red;
             border-radius: 50%;
-            animation: explode 0.5s forwards;
+            animation: fall 5s forwards, explode 0.5s forwards 5s; /* Fall then explode */
         }
 
         @keyframes explode {
@@ -48,13 +49,19 @@
             opacity: 0;
         }
 
-        .blast {
-            animation: blast 0.5s forwards;
+        @keyframes fall {
+            from {
+                top: 0;
+            }
+            to {
+                top: 80%; /* Fall to the bottom of the board */
+            }
         }
 
-        @keyframes blast {
-            transform: scale(0);
-            opacity: 0;
+        .letter {
+            position: absolute;
+            font-size: 2rem;
+            animation: fall 3s forwards; /* Fall animation for letters */
         }
     </style>
 </head>
@@ -67,61 +74,42 @@
         const board = document.getElementById('board');
 
         document.addEventListener('keydown', (event) => {
-            // Append the typed character to the output
-            output.innerText += event.key;
+            // Create a letter element that falls
+            const letterElement = document.createElement('div');
+            letterElement.className = 'letter';
+            letterElement.innerText = event.key;
+
+            // Position the letter at a random horizontal position
+            const randomX = Math.random() * (board.clientWidth - 50);
+            letterElement.style.left = `${randomX}px`;
+            letterElement.style.top = `0px`; // Start from the top
+
+            board.appendChild(letterElement);
+
+            // Trigger the falling animation
+            letterElement.animate([
+                { top: '0px' },
+                { top: '80%' }
+            ], {
+                duration: 3000,
+                fill: 'forwards'
+            });
+
+            // Set a timeout to remove the letter after it falls
+            setTimeout(() => {
+                letterElement.remove();
+            }, 3000);
         });
 
         board.addEventListener('click', (event) => {
-            // Create a bomb at the mouse click position
+            // Create a bomb that falls from the click position
             const bomb = document.createElement('div');
             bomb.className = 'bomb';
             bomb.style.left = `${event.clientX - 25}px`; // Center the bomb
-            bomb.style.top = `${event.clientY - 25}px`; // Center the bomb
+            bomb.style.top = `0px`; // Start from the top
 
             board.appendChild(bomb);
-
-            // Schedule the blast after 5 seconds
-            setTimeout(() => {
-                // Create the blast effect
-                const blast = document.createElement('div');
-                blast.className = 'blast';
-                blast.style.left = `${event.clientX - 25}px`;
-                blast.style.top = `${event.clientY - 25}px`;
-                board.appendChild(blast);
-
-                // Remove the bomb and the blast after the animation
-                setTimeout(() => {
-                    bomb.remove();
-                    blast.remove();
-                }, 500);
-
-                // Destroy nearby letters
-                destroyNearbyLetters(event.clientX, event.clientY);
-            }, 5000);
         });
-
-        function destroyNearbyLetters(x, y) {
-            const letters = output.innerText.split('');
-            output.innerText = ''; // Clear the output
-
-            letters.forEach((letter, index) => {
-                const letterElement = document.createElement('span');
-                letterElement.innerText = letter;
-
-                // Calculate distance from the bomb
-                const letterX = (index * 30) + 30; // Rough estimation of letter position
-                const letterY = 50; // Fixed Y position for single line
-
-                const distance = Math.sqrt(Math.pow(letterX - x, 2) + Math.pow(letterY - y, 2));
-
-                // If within a certain distance, add the blast effect
-                if (distance < 100) {
-                    letterElement.classList.add('blast');
-                }
-
-                output.appendChild(letterElement);
-            });
-        }
     </script>
 </body>
 </html>
