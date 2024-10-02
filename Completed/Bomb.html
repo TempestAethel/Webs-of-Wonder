@@ -18,14 +18,11 @@
 
         .board {
             position: relative;
-            width: 80%;
-            height: 80%;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
             border: 2px solid #333;
             overflow: hidden;
             background-color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; /* Align letters at the top */
         }
 
         h1 {
@@ -54,7 +51,7 @@
                 top: 0;
             }
             to {
-                top: 80%; /* Fall to the bottom of the board */
+                top: 100%; /* Fall to the bottom of the board */
             }
         }
 
@@ -95,10 +92,8 @@
                 fill: 'forwards'
             });
 
-            // Set a timeout to remove the letter after it falls
-            setTimeout(() => {
-                letterElement.remove();
-            }, 3000);
+            // Set a reference for the letter for later use
+            letterElement.dataset.active = true; // Keep track of active letters
         });
 
         board.addEventListener('click', (event) => {
@@ -109,6 +104,28 @@
             bomb.style.top = `0px`; // Start from the top
 
             board.appendChild(bomb);
+
+            // After the bomb explodes, remove letters nearby
+            bomb.addEventListener('animationend', () => {
+                // Get all letter elements
+                const letters = document.querySelectorAll('.letter');
+                letters.forEach(letter => {
+                    const letterRect = letter.getBoundingClientRect();
+                    const bombRect = bomb.getBoundingClientRect();
+
+                    // Check if the letter is within a 100px radius of the bomb
+                    const distance = Math.sqrt(
+                        Math.pow(letterRect.x - bombRect.x, 2) + 
+                        Math.pow(letterRect.y - bombRect.y, 2)
+                    );
+
+                    if (distance < 100) {
+                        letter.remove(); // Remove the letter
+                    }
+                });
+
+                bomb.remove(); // Remove the bomb after explosion
+            });
         });
     </script>
 </body>
