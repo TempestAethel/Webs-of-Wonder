@@ -64,8 +64,9 @@
         .power-up {
             position: absolute;
             color: cyan;
-            font-size: 24px;
+            font-size: 36px; /* Increased size */
             animation: fall 5s linear forwards;
+            z-index: -1; /* Ensure it's behind other elements */
         }
         @keyframes fall {
             0% { top: -50px; }
@@ -262,7 +263,7 @@
         function checkInput() {
             if (userInput.value === document.getElementById("meaningful-sentence").innerText) {
                 clearInterval(timer);
-                score += 100; // Increase bonus points for winning
+                score += 100; // Bonus points for winning
                 updateScore();
                 resultDisplay.innerText = "You win! Great job!";
                 resultDisplay.classList.remove("hidden");
@@ -314,6 +315,11 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#E0E0E0';
             ctx.font = '16px Arial';
+
+            // Draw a decorative border to mimic noricon style
+            ctx.strokeStyle = 'gold';
+            ctx.lineWidth = 5;
+            ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
 
             // Center the title
             ctx.textAlign = 'center';
