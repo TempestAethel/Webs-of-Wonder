@@ -117,7 +117,7 @@
     </div>
     <p id="timer">Time left: <span id="time-left">30</span> seconds</p>
     <p id="result" class="hidden"></p>
-    <button id="share-button" class="hidden">Share Score</button>
+    <button id="download-button" class="hidden">Download Achievements</button>
 
     <script>
         const meaningfulSentences = [
@@ -138,7 +138,7 @@
         const timerDisplay = document.getElementById("time-left");
         const scoreDisplay = document.getElementById("score-value");
         const resultDisplay = document.getElementById("result");
-        const shareButton = document.getElementById("share-button");
+        const downloadButton = document.getElementById("download-button");
         let timer;
         let timeLeft = 30;
         let score = 0;
@@ -146,11 +146,16 @@
         let powerUpType = "";
         
         // Achievements
-        const achievements = {
+        const achievements = JSON.parse(localStorage.getItem('achievements')) || {
             firstWin: false,
             type100Chars: false,
             play1Hour: false,
         };
+
+        // Save achievements to localStorage
+        function saveAchievements() {
+            localStorage.setItem('achievements', JSON.stringify(achievements));
+        }
 
         function startTimer() {
             timer = setInterval(() => {
@@ -224,20 +229,16 @@
             powerUpActive = true;
 
             if (powerUpType === "shield") {
-                alert("Shield Activated! You won't lose a character for 10 seconds.");
                 setTimeout(() => {
                     powerUpActive = false;
-                    alert("Shield expired.");
                 }, 10000);
             } else if (powerUpType === "slow") {
-                alert("Slow Time Activated! Timer paused for 5 seconds.");
                 clearInterval(timer);
                 setTimeout(() => {
                     timeLeft += 5; // Give extra time
                     startTimer();
                 }, 5000);
             } else if (powerUpType === "double") {
-                alert("Double Points Activated! Score will be doubled for 10 seconds.");
                 const originalScore = score;
                 setTimeout(() => {
                     powerUpActive = false;
@@ -254,7 +255,7 @@
         function checkAchievements() {
             if (score >= 100 && !achievements.type100Chars) {
                 achievements.type100Chars = true;
-                alert("Achievement Unlocked: Typed 100 Characters!");
+                saveAchievements();
             }
         }
 
@@ -265,10 +266,10 @@
                 updateScore();
                 resultDisplay.innerText = "You win! Great job!";
                 resultDisplay.classList.remove("hidden");
-                shareButton.classList.remove("hidden");
+                downloadButton.classList.remove("hidden");
                 if (!achievements.firstWin) {
                     achievements.firstWin = true;
-                    alert("Achievement Unlocked: First Win!");
+                    saveAchievements();
                 }
             }
         }
@@ -303,12 +304,26 @@
         startTimer();
         setInterval(randomExplosion, 1500); // Default interval for the first run
 
-        // Share functionality
-        shareButton.onclick = function() {
-            const url = encodeURIComponent(window.location.href);
-            const scoreText = `I scored ${score} points in the Explosive Sentence Game!`;
-            const shareUrl = `https://twitter.com/intent/tweet?text=${scoreText}&url=${url}`;
-            window.open(shareUrl, '_blank');
+        // Download achievements as an image
+        downloadButton.onclick = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 300;
+            canvas.height = 200;
+            ctx.fillStyle = '#121212';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#E0E0E0';
+            ctx.font = '16px Arial';
+            ctx.fillText('Achievements:', 10, 20);
+            let y = 40;
+            for (const [key, value] of Object.entries(achievements)) {
+                ctx.fillText(`${key}: ${value ? 'Unlocked' : 'Locked'}`, 10, y);
+                y += 20;
+            }
+            const link = document.createElement('a');
+            link.download = 'achievements.png';
+            link.href = canvas.toDataURL();
+            link.click();
         };
 
     </script>
