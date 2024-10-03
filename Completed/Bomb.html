@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explosive Sentence Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noricon&display=swap" rel="stylesheet">
     <style>
         body {
             background-color: #121212;
@@ -80,10 +81,24 @@
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 300px;
         }
-        canvas {
-            display: block;
-            margin: 20px auto;
+        #achievements h2 {
+            font-family: 'Noricon', sans-serif;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        #achievements .achieved, #achievements .yet-to-achieve {
+            width: 100%;
+            text-align: left;
+        }
+        #signature {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #B0B0B0;
+        }
+        #qr-code {
+            margin-top: 10px;
         }
         button {
             background-color: #007BFF;
@@ -131,11 +146,23 @@
     </div>
     <p id="timer">Time left: <span id="time-left">30</span> seconds</p>
     <p id="result" class="hidden"></p>
+    
+    <!-- Added meaningful sentence display -->
+    <p id="meaningful-sentence" style="font-family: 'Noricon', sans-serif; font-size: 1.2em; margin-top: 20px;"></p>
+    
     <button id="download-button" class="hidden">Download Achievements</button>
 
     <div id="achievements" class="hidden">
         <h2>Achievements</h2>
-        <div id="achievement-list"></div>
+        <div class="achieved" id="achievement-list-achieved"></div>
+        <div class="yet-to-achieve" id="achievement-list-yet"></div>
+    </div>
+
+    <div id="signature">tempestAethel</div>
+    <div id="qr-code">
+        <a href="https://tempestaethel.github.io/Webs-of-Wonder/Completed/Bomb.html" target="_blank">
+            https://tempestaethel.github.io/Webs-of-Wonder/Completed/Bomb.html
+        </a>
     </div>
 
     <script>
@@ -158,13 +185,15 @@
         const scoreDisplay = document.getElementById("score-value");
         const resultDisplay = document.getElementById("result");
         const downloadButton = document.getElementById("download-button");
-        const achievementList = document.getElementById("achievement-list");
+        const achievementListAchieved = document.getElementById("achievement-list-achieved");
+        const achievementListYet = document.getElementById("achievement-list-yet");
+        const meaningfulSentenceDisplay = document.getElementById("meaningful-sentence");
         let timer;
         let timeLeft = 30;
         let score = 0;
         let powerUpActive = false;
         let powerUpType = "";
-        
+
         // Achievements
         const achievements = JSON.parse(localStorage.getItem('achievements')) || {
             firstWin: false,
@@ -207,7 +236,7 @@
                 const validInputs = userInput.value.split('').filter(c => /[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]/.test(c));
                 if (validInputs.length > 0) {
                     const randomIndex = Math.floor(Math.random() * validInputs.length);
-                    userInput.value = userInput.value.slice(0, randomIndex) + userInput.value.slice(randomIndex + 1);
+                    userInput.value = userInput.value.replace(validInputs[randomIndex], '');
                     score -= 5; // Lose points for destruction
                     updateScore();
                     triggerExplosion(randomIndex);
@@ -236,6 +265,10 @@
                 powerUp.remove();
             }, 5000);
 
+            powerUp.addEventListener("animationend", () => {
+                powerUp.remove();
+            });
+
             powerUp.onclick = function() {
                 collectPowerUp();
                 powerUp.remove();
@@ -249,16 +282,20 @@
             powerUpActive = true;
 
             if (powerUpType === "shield") {
+                alert("Shield Activated! You won't lose a character for 10 seconds.");
                 setTimeout(() => {
                     powerUpActive = false;
+                    alert("Shield expired.");
                 }, 10000);
             } else if (powerUpType === "slow") {
+                alert("Slow Time Activated! Timer paused for 5 seconds.");
                 clearInterval(timer);
                 setTimeout(() => {
                     timeLeft += 5; // Give extra time
                     startTimer();
                 }, 5000);
             } else if (powerUpType === "double") {
+                alert("Double Points Activated! Score will be doubled for 10 seconds.");
                 const originalScore = score;
                 setTimeout(() => {
                     powerUpActive = false;
@@ -289,20 +326,15 @@
                 achievements.comebackKid = true;
                 saveAchievements();
             }
-        }
-
-        function checkInput() {
-            if (userInput.value === document.getElementById("meaningful-sentence").innerText) {
+            if (!achievements.firstWin && userInput.value === meaningfulSentenceDisplay.innerText) {
                 clearInterval(timer);
                 score += 50; // Bonus points for winning
                 updateScore();
                 resultDisplay.innerText = "You win! Great job!";
                 resultDisplay.classList.remove("hidden");
                 downloadButton.classList.remove("hidden");
-                if (!achievements.firstWin) {
-                    achievements.firstWin = true;
-                    saveAchievements();
-                }
+                achievements.firstWin = true;
+                saveAchievements();
             }
         }
 
@@ -314,7 +346,6 @@
                 score += 2; // Gain points for correct input
                 updateScore();
             }
-            checkInput();
         });
 
         document.getElementById("difficulty").addEventListener('change', (e) => {
@@ -328,7 +359,7 @@
 
         function randomSentence() {
             const randomIndex = Math.floor(Math.random() * meaningfulSentences.length);
-            document.getElementById("meaningful-sentence").innerText = meaningfulSentences[randomIndex];
+            meaningfulSentenceDisplay.innerText = meaningfulSentences[randomIndex];
         }
 
         // Initialize game
@@ -336,39 +367,47 @@
         startTimer();
         setInterval(randomExplosion, 1500); // Default interval for the first run
 
+        // Display achievements
+        function displayAchievements() {
+            achievementListAchieved.innerHTML = '';
+            achievementListYet.innerHTML = '';
+            for (const [key, value] of Object.entries(achievements)) {
+                const badge = document.createElement('div');
+                badge.className = 'badge';
+                badge.innerText = value ? key : `Yet to Achieve: ${key}`;
+                if (value) {
+                    achievementListAchieved.appendChild(badge);
+                } else {
+                    achievementListYet.appendChild(badge);
+                }
+            }
+            document.getElementById("achievements").classList.remove("hidden");
+        }
+        displayAchievements(); // Call to display achievements on load
+
         // Download achievements as an image
         downloadButton.onclick = function() {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = 300;
-            canvas.height = 200;
+            canvas.width = 400;
+            canvas.height = 300;
             ctx.fillStyle = '#121212';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#E0E0E0';
-            ctx.font = '16px Arial';
-            ctx.fillText('Achievements:', 10, 20);
-            let y = 40;
+            ctx.font = '20px Noricon';
+            ctx.fillText('Achievements:', 10, 30);
+            let y = 60;
             for (const [key, value] of Object.entries(achievements)) {
-                ctx.fillText(`${key}: ${value ? 'Unlocked' : 'Locked'}`, 10, y);
-                y += 20;
+                ctx.fillText(value ? `${key}` : `Yet to Achieve: ${key}`, 10, y);
+                y += 25;
             }
+            ctx.fillText('tempestAethel', 10, y + 20);
+            ctx.fillText('https://tempestaethel.github.io/Webs-of-Wonder/Completed/Bomb.html', 10, y + 40);
             const link = document.createElement('a');
             link.download = 'achievements.png';
             link.href = canvas.toDataURL();
             link.click();
         };
-
-        // Display achievements
-        function displayAchievements() {
-            achievementList.innerHTML = '';
-            for (const [key, value] of Object.entries(achievements)) {
-                const badge = document.createElement('div');
-                badge.className = 'badge';
-                badge.innerText = `${key}: ${value ? 'Unlocked' : 'Locked'}`;
-                achievementList.appendChild(badge);
-            }
-        }
-        displayAchievements(); // Call to display achievements on load
 
     </script>
 
