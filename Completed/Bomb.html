@@ -15,20 +15,24 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
+            padding: 20px;
         }
         h1 {
             margin-bottom: 20px;
+            text-align: center;
         }
         input {
             padding: 10px;
             font-size: 18px;
             border: none;
             border-radius: 5px;
-            width: 300px;
+            width: 100%;
+            max-width: 300px;
             outline: none;
         }
         .container {
             position: relative;
+            margin-bottom: 20px;
         }
         .explosion {
             display: none;
@@ -55,6 +59,14 @@
         .hidden {
             display: none;
         }
+        @media (max-width: 600px) {
+            input {
+                font-size: 16px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -63,8 +75,8 @@
     <div class="difficulty">
         <label for="difficulty">Select Difficulty:</label>
         <select id="difficulty">
-            <option value="1000">Easy (1s)</option>
-            <option value="750">Medium (0.75s)</option>
+            <option value="1500">Easy (1.5s)</option>
+            <option value="1000">Medium (1s)</option>
             <option value="500">Hard (0.5s)</option>
         </select>
     </div>
@@ -76,7 +88,14 @@
     <p id="result" class="hidden"></p>
 
     <script>
-        const meaningfulSentence = "The quick brown fox jumps over the lazy dog.";
+        const meaningfulSentences = [
+            "The quick brown fox jumps over the lazy dog.",
+            "A journey of a thousand miles begins with a single step.",
+            "To be or not to be, that is the question.",
+            "All that glitters is not gold.",
+            "The only thing we have to fear is fear itself."
+        ];
+
         const userInput = document.getElementById("user-input");
         const explosionDiv = document.getElementById("explosion");
         const timerDisplay = document.getElementById("time-left");
@@ -97,7 +116,7 @@
         }
 
         function randomExplosion() {
-            const validInputs = userInput.value.split('').filter(c => /[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(c));
+            const validInputs = userInput.value.split('').filter(c => /[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]/.test(c));
             if (validInputs.length > 0) {
                 const randomIndex = Math.floor(Math.random() * validInputs.length);
                 userInput.value = userInput.value.slice(0, randomIndex) + userInput.value.slice(randomIndex + 1);
@@ -111,7 +130,7 @@
         }
 
         function checkInput() {
-            if (userInput.value === meaningfulSentence) {
+            if (userInput.value === document.getElementById("meaningful-sentence").innerText) {
                 clearInterval(timer);
                 resultDisplay.innerText = "You win! Great job!";
                 resultDisplay.classList.remove("hidden");
@@ -119,7 +138,7 @@
         }
 
         userInput.addEventListener('input', (e) => {
-            const regex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/;
+            const regex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]*$/;
             if (!regex.test(e.target.value)) {
                 e.target.value = e.target.value.slice(0, -1);
             }
@@ -135,9 +154,15 @@
             startTimer();
         });
 
+        function randomSentence() {
+            const randomIndex = Math.floor(Math.random() * meaningfulSentences.length);
+            document.getElementById("meaningful-sentence").innerText = meaningfulSentences[randomIndex];
+        }
+
         // Initialize game
+        randomSentence();
         startTimer();
-        setInterval(randomExplosion, 1000); // Default interval for the first run
+        setInterval(randomExplosion, 1500); // Default interval for the first run
     </script>
 
 </body>
