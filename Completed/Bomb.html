@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explosive Input Effect</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .input-container {
+            position: relative;
+            width: 80%;
+            max-width: 600px;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #3a3a3a;
+            border-radius: 5px;
+            background-color: #222;
+            color: #e0e0e0;
+            font-size: 18px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #4caf50;
+            outline: none;
+        }
+        .explosion {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background-color: rgba(255, 0, 0, 0.5);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: width 0.4s, height 0.4s, opacity 0.4s;
+        }
+        .explosion.animate {
+            width: 50px;
+            height: 50px;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="input-container">
+        <input type="text" id="inputField" aria-label="Explosive input field" placeholder="Type here..." />
+        <div id="explosionEffect" class="explosion"></div>
+    </div>
+
+    <script>
+        const inputField = document.getElementById('inputField');
+        const explosionEffect = document.getElementById('explosionEffect');
+
+        inputField.addEventListener('keypress', function(event) {
+            const char = String.fromCharCode(event.charCode);
+            if (!/^[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;"'<>,.?\/\\|-]+$/.test(char)) {
+                event.preventDefault();
+            }
+        });
+
+        inputField.addEventListener('click', function(event) {
+            const rect = inputField.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            explosionEffect.style.left = `${event.clientX}px`;
+            explosionEffect.style.top = `${event.clientY}px`;
+            explosionEffect.classList.add('animate');
+
+            setTimeout(() => {
+                explosionEffect.classList.remove('animate');
+                const position = Math.max(0, Math.min(inputField.value.length - 1, Math.floor(x / (inputField.clientWidth / inputField.value.length))));
+                inputField.value = inputField.value.slice(0, position - 2) + inputField.value.slice(position + 3);
+            }, 400);
+        });
+    </script>
+</body>
+</html>
