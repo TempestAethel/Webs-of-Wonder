@@ -54,7 +54,7 @@
             }
         }
         .difficulty {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         .hidden {
             display: none;
@@ -75,11 +75,17 @@
     <div class="difficulty">
         <label for="difficulty">Select Difficulty:</label>
         <select id="difficulty">
+            <option value="2000">Very Easy (2s)</option>
             <option value="1500">Easy (1.5s)</option>
             <option value="1000">Medium (1s)</option>
-            <option value="500">Hard (0.5s)</option>
+            <option value="750">Hard (0.75s)</option>
+            <option value="500">Very Hard (0.5s)</option>
+            <option value="250">Extreme (0.25s)</option>
         </select>
     </div>
+    <label>
+        <input type="checkbox" id="destroy-end" aria-label="Destroy only the last typed character"> Destroy only the last typed character
+    </label>
     <div class="container">
         <input type="text" id="user-input" aria-label="Input your sentence here">
         <div id="explosion" class="explosion"></div>
@@ -93,7 +99,12 @@
             "A journey of a thousand miles begins with a single step.",
             "To be or not to be, that is the question.",
             "All that glitters is not gold.",
-            "The only thing we have to fear is fear itself."
+            "The only thing we have to fear is fear itself.",
+            "In the middle of difficulty lies opportunity.",
+            "Life is what happens when you're busy making other plans.",
+            "The purpose of our lives is to be happy.",
+            "Get busy living or get busy dying.",
+            "You have within you right now, everything you need to deal with whatever the world can throw at you."
         ];
 
         const userInput = document.getElementById("user-input");
@@ -116,17 +127,30 @@
         }
 
         function randomExplosion() {
-            const validInputs = userInput.value.split('').filter(c => /[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]/.test(c));
-            if (validInputs.length > 0) {
-                const randomIndex = Math.floor(Math.random() * validInputs.length);
-                userInput.value = userInput.value.slice(0, randomIndex) + userInput.value.slice(randomIndex + 1);
-                explosionDiv.style.left = `${userInput.getBoundingClientRect().left + (randomIndex * 10)}px`;
-                explosionDiv.style.top = `${userInput.getBoundingClientRect().top + 10}px`;
-                explosionDiv.style.display = 'block';
-                setTimeout(() => {
-                    explosionDiv.style.display = 'none';
-                }, 500);
+            const destroyEndOnly = document.getElementById("destroy-end").checked;
+
+            if (destroyEndOnly) {
+                if (userInput.value.length > 0) {
+                    userInput.value = userInput.value.slice(0, -1);
+                    triggerExplosion(userInput.value.length);
+                }
+            } else {
+                const validInputs = userInput.value.split('').filter(c => /[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]/.test(c));
+                if (validInputs.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * validInputs.length);
+                    userInput.value = userInput.value.slice(0, randomIndex) + userInput.value.slice(randomIndex + 1);
+                    triggerExplosion(randomIndex);
+                }
             }
+        }
+
+        function triggerExplosion(index) {
+            explosionDiv.style.left = `${userInput.getBoundingClientRect().left + (index * 10)}px`;
+            explosionDiv.style.top = `${userInput.getBoundingClientRect().top + 10}px`;
+            explosionDiv.style.display = 'block';
+            setTimeout(() => {
+                explosionDiv.style.display = 'none';
+            }, 500);
         }
 
         function checkInput() {
