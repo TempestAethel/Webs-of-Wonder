@@ -8,7 +8,7 @@
         body {
             background-color: #121212;
             color: #E0E0E0;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -16,21 +16,28 @@
             height: 100vh;
             margin: 0;
             padding: 20px;
-            position: relative;
+            text-align: center;
             overflow: hidden;
         }
         h1 {
             margin-bottom: 20px;
-            text-align: center;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
         }
         input {
             padding: 10px;
             font-size: 18px;
-            border: none;
+            border: 2px solid #444;
             border-radius: 5px;
             width: 100%;
             max-width: 300px;
             outline: none;
+            margin-bottom: 10px;
+            background-color: #222;
+            color: #E0E0E0;
+        }
+        input:focus {
+            border-color: #007BFF;
         }
         .container {
             position: relative;
@@ -46,30 +53,11 @@
             animation: explode 0.5s forwards;
         }
         @keyframes explode {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(4);
-                opacity: 0;
-            }
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(4); opacity: 0; }
         }
-        .difficulty {
-            margin-bottom: 10px;
-        }
-        .hidden {
-            display: none;
-        }
-        .power-up {
-            position: absolute;
-            color: cyan;
-            font-size: 24px;
-            animation: fall 5s linear forwards;
-        }
-        @keyframes fall {
-            0% { top: -50px; }
-            100% { top: 100vh; }
+        .difficulty, .checkbox {
+            margin: 10px 0;
         }
         .badge {
             display: inline-block;
@@ -83,19 +71,45 @@
             margin: 20px;
             font-size: 24px;
         }
+        #achievements {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            background-color: #222;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
         @media (max-width: 600px) {
             input {
                 font-size: 16px;
             }
             h1 {
-                font-size: 20px;
+                font-size: 2em;
             }
         }
     </style>
 </head>
 <body>
 
-    <h1 id="meaningful-sentence">The quick brown fox jumps over the lazy dog.</h1>
+    <h1>Explosive Sentence Game</h1>
     <div id="score">Score: <span id="score-value">0</span></div>
     <div class="difficulty">
         <label for="difficulty">Select Difficulty:</label>
@@ -108,16 +122,21 @@
             <option value="250">Extreme (0.25s)</option>
         </select>
     </div>
-    <label>
-        <input type="checkbox" id="destroy-end" aria-label="Destroy only the last typed character"> Destroy only the last typed character
+    <label class="checkbox">
+        <input type="checkbox" id="destroy-end"> Destroy only the last typed character
     </label>
     <div class="container">
-        <input type="text" id="user-input" aria-label="Input your sentence here">
+        <input type="text" id="user-input" aria-label="Input your sentence here" placeholder="Type the sentence...">
         <div id="explosion" class="explosion"></div>
     </div>
     <p id="timer">Time left: <span id="time-left">30</span> seconds</p>
     <p id="result" class="hidden"></p>
     <button id="download-button" class="hidden">Download Achievements</button>
+
+    <div id="achievements" class="hidden">
+        <h2>Achievements</h2>
+        <div id="achievement-list"></div>
+    </div>
 
     <script>
         const meaningfulSentences = [
@@ -139,6 +158,7 @@
         const scoreDisplay = document.getElementById("score-value");
         const resultDisplay = document.getElementById("result");
         const downloadButton = document.getElementById("download-button");
+        const achievementList = document.getElementById("achievement-list");
         let timer;
         let timeLeft = 30;
         let score = 0;
@@ -150,11 +170,15 @@
             firstWin: false,
             type100Chars: false,
             play1Hour: false,
+            rapidTyper: false,
+            sentenceMaster: false,
+            comebackKid: false,
         };
 
         // Save achievements to localStorage
         function saveAchievements() {
             localStorage.setItem('achievements', JSON.stringify(achievements));
+            displayAchievements();
         }
 
         function startTimer() {
@@ -175,7 +199,7 @@
             if (destroyEndOnly) {
                 if (userInput.value.length > 0) {
                     userInput.value = userInput.value.slice(0, -1);
-                    score -= 10; // Lose points for destruction
+                    score -= 5; // Lose points for destruction
                     updateScore();
                     triggerExplosion(userInput.value.length);
                 }
@@ -184,7 +208,7 @@
                 if (validInputs.length > 0) {
                     const randomIndex = Math.floor(Math.random() * validInputs.length);
                     userInput.value = userInput.value.slice(0, randomIndex) + userInput.value.slice(randomIndex + 1);
-                    score -= 10; // Lose points for destruction
+                    score -= 5; // Lose points for destruction
                     updateScore();
                     triggerExplosion(randomIndex);
                 }
@@ -211,10 +235,6 @@
             setTimeout(() => {
                 powerUp.remove();
             }, 5000);
-
-            powerUp.addEventListener("animationend", () => {
-                powerUp.remove();
-            });
 
             powerUp.onclick = function() {
                 collectPowerUp();
@@ -257,6 +277,18 @@
                 achievements.type100Chars = true;
                 saveAchievements();
             }
+            if (score >= 250 && !achievements.rapidTyper) {
+                achievements.rapidTyper = true;
+                saveAchievements();
+            }
+            if (score >= 500 && !achievements.sentenceMaster) {
+                achievements.sentenceMaster = true;
+                saveAchievements();
+            }
+            if (timeLeft > 0 && !achievements.comebackKid) {
+                achievements.comebackKid = true;
+                saveAchievements();
+            }
         }
 
         function checkInput() {
@@ -279,7 +311,7 @@
             if (!regex.test(e.target.value)) {
                 e.target.value = e.target.value.slice(0, -1);
             } else {
-                score += 1; // Gain points for correct input
+                score += 2; // Gain points for correct input
                 updateScore();
             }
             checkInput();
@@ -325,6 +357,18 @@
             link.href = canvas.toDataURL();
             link.click();
         };
+
+        // Display achievements
+        function displayAchievements() {
+            achievementList.innerHTML = '';
+            for (const [key, value] of Object.entries(achievements)) {
+                const badge = document.createElement('div');
+                badge.className = 'badge';
+                badge.innerText = `${key}: ${value ? 'Unlocked' : 'Locked'}`;
+                achievementList.appendChild(badge);
+            }
+        }
+        displayAchievements(); // Call to display achievements on load
 
     </script>
 
