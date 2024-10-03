@@ -3,190 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Typing Game</title>
+    <title>Explosive Sentence Game</title>
     <style>
         body {
-            background-color: #1e1e1e;
-            color: #ffffff;
+            background-color: #121212;
+            color: #E0E0E0;
             font-family: Arial, sans-serif;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
         }
-        #sentence {
-            font-size: 1.5em;
-            margin: 20px 0;
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
         }
         input {
-            width: 80%;
             padding: 10px;
-            font-size: 1.2em;
-            margin: 10px 0;
-        }
-        #timer, #score {
-            font-size: 1.5em;
-        }
-        .badge {
-            display: inline-block;
-            background-color: #444;
-            border-radius: 10px;
-            padding: 10px;
-            margin: 5px;
-        }
-        #power-ups {
-            margin-top: 20px;
-        }
-        .power-up {
-            display: inline-block;
-            margin: 5px;
-            padding: 10px;
-            background-color: #333;
+            font-size: 18px;
+            border: none;
             border-radius: 5px;
-            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+            outline: none;
+        }
+        .container {
+            position: relative;
+            margin-bottom: 20px;
         }
         .explosion {
             display: none;
             position: absolute;
-            width: 50px;
-            height: 50px;
+            width: 20px;
+            height: 20px;
             background: radial-gradient(circle, yellow, transparent);
             border-radius: 50%;
             animation: explode 0.5s forwards;
         }
         @keyframes explode {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(3); opacity: 0; }
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        .difficulty {
+            margin-bottom: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .power-up {
+            position: absolute;
+            color: cyan;
+            font-size: 24px;
+            animation: fall 5s linear forwards;
+        }
+        @keyframes fall {
+            0% { top: -50px; }
+            100% { top: 100vh; }
+        }
+        .badge {
+            display: inline-block;
+            margin: 5px;
+            padding: 5px 10px;
+            background: teal;
+            border-radius: 3px;
+            color: white;
+        }
+        #score {
+            margin: 20px;
+            font-size: 24px;
+        }
+        @media (max-width: 600px) {
+            input {
+                font-size: 16px;
+            }
+            h1 {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
 
-<h1>Typing Game</h1>
-<div id="sentence">Type this sentence.</div>
-<input type="text" id="textInput" placeholder="Start typing..." />
-<div id="timer">Time: <span id="timeRemaining">30</span>s</div>
-<div id="score">Score: <span id="currentScore">0</span></div>
-<div id="achievements"></div>
-<div id="power-ups"></div>
-<div id="qr-link"><a href="#" id="shareLink">Share this game</a></div>
-<div id="signature">Created by: tempestAethel</div>
+    <h1 id="meaningful-sentence">The quick brown fox jumps over the lazy dog.</h1>
+    <div id="score">Score: <span id="score-value">0</span></div>
+    <div class="difficulty">
+        <label for="difficulty">Select Difficulty:</label>
+        <select id="difficulty">
+            <option value="2000">Very Easy (2s)</option>
+            <option value="1500">Easy (1.5s)</option>
+            <option value="1000">Medium (1s)</option>
+            <option value="750">Hard (0.75s)</option>
+            <option value="500">Very Hard (0.5s)</option>
+            <option value="250">Extreme (0.25s)</option>
+        </select>
+    </div>
+    <label>
+        <input type="checkbox" id="destroy-end" aria-label="Destroy only the last typed character"> Destroy only the last typed character
+    </label>
+    <div class="container">
+        <input type="text" id="user-input" aria-label="Input your sentence here">
+        <div id="explosion" class="explosion"></div>
+    </div>
+    <p id="timer">Time left: <span id="time-left">30</span> seconds</p>
+    <p id="result" class="hidden"></p>
+    <button id="download-button" class="hidden">Download Achievements</button>
 
-<div id="explosionEffect" class="explosion"></div>
+    <script>
+        const meaningfulSentences = [
+            "The quick brown fox jumps over the lazy dog.",
+            "A journey of a thousand miles begins with a single step.",
+            "To be or not to be, that is the question.",
+            "All that glitters is not gold.",
+            "The only thing we have to fear is fear itself.",
+            "In the middle of difficulty lies opportunity.",
+            "Life is what happens when you're busy making other plans.",
+            "The purpose of our lives is to be happy.",
+            "Get busy living or get busy dying.",
+            "You have within you right now, everything you need to deal with whatever the world can throw at you."
+        ];
 
-<script>
-    const sentences = [
-        "The quick brown fox jumps over the lazy dog.",
-        "Typing is a great way to improve your skills.",
-        "Practice makes perfect, keep typing!",
-        "The rain in Spain stays mainly in the plain.",
-        "A journey of a thousand miles begins with a single step."
-    ];
-    
-    let currentSentence = "";
-    let score = 0;
-    let timer;
-    let timeRemaining = 30;
-    let achievements = JSON.parse(localStorage.getItem("achievements")) || [];
-    
-    function startGame() {
-        currentSentence = sentences[Math.floor(Math.random() * sentences.length)];
-        document.getElementById('sentence').innerText = currentSentence;
-        document.getElementById('textInput').value = '';
-        score = 0;
-        timeRemaining = 30;
-        document.getElementById('currentScore').innerText = score;
-        document.getElementById('timeRemaining').innerText = timeRemaining;
-        startTimer();
-        document.getElementById('textInput').focus();
-        resetPowerUps();
-        updateAchievementsDisplay();
-    }
+        const userInput = document.getElementById("user-input");
+        const explosionDiv = document.getElementById("explosion");
+        const timerDisplay = document.getElementById("time-left");
+        const scoreDisplay = document.getElementById("score-value");
+        const resultDisplay = document.getElementById("result");
+        const downloadButton = document.getElementById("download-button");
+        let timer;
+        let timeLeft = 30;
+        let score = 0;
+        let powerUpActive = false;
+        let powerUpType = "";
+        
+        // Achievements
+        const achievements = JSON.parse(localStorage.getItem('achievements')) || {
+            firstWin: false,
+            type100Chars: false,
+            play1Hour: false,
+        };
 
-    function startTimer() {
-        timer = setInterval(() => {
-            timeRemaining--;
-            document.getElementById('timeRemaining').innerText = timeRemaining;
-            if (timeRemaining <= 0) {
-                clearInterval(timer);
-                alert(`Game Over! Your score: ${score}`);
-                checkAchievements();
+        // Save achievements to localStorage
+        function saveAchievements() {
+            localStorage.setItem('achievements', JSON.stringify(achievements));
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    resultDisplay.innerText = "You lost! Time's up.";
+                    resultDisplay.classList.remove("hidden");
+                }
+            }, 1000);
+        }
+
+        function randomExplosion() {
+            const destroyEndOnly = document.getElementById("destroy-end").checked;
+
+            if (destroyEndOnly) {
+                if (userInput.value.length > 0) {
+                    userInput.value = userInput.value.slice(0, -1);
+                    score -= 10; // Lose points for destruction
+                    updateScore();
+                    triggerExplosion(userInput.value.length);
+                }
+            } else {
+                const validInputs = userInput.value.split('').filter(c => /[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]/.test(c));
+                if (validInputs.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * validInputs.length);
+                    userInput.value = userInput.value.slice(0, randomIndex) + userInput.value.slice(randomIndex + 1);
+                    score -= 10; // Lose points for destruction
+                    updateScore();
+                    triggerExplosion(randomIndex);
+                }
             }
-        }, 1000);
-    }
-
-    document.getElementById('textInput').addEventListener('input', function() {
-        let inputText = this.value;
-        inputText = inputText.replace(/[^a-zA-Z0-9\s.,?!]/g, ''); // Input Validation
-        this.value = inputText;
-
-        if (inputText === currentSentence) {
-            score += inputText.length; // Correct characters
-            document.getElementById('currentScore').innerText = score;
-            createExplosion(); // Visual feedback
-            alert("Well done! Next sentence...");
-            startGame();
+            spawnPowerUp();
         }
-    });
 
-    function createExplosion() {
-        const explosion = document.getElementById('explosionEffect');
-        explosion.style.left = Math.random() * window.innerWidth + 'px';
-        explosion.style.top = Math.random() * window.innerHeight + 'px';
-        explosion.style.display = 'block';
-        setTimeout(() => explosion.style.display = 'none', 500);
-    }
-
-    function checkAchievements() {
-        if (score >= 100 && !achievements.includes("Typed 100 Characters")) {
-            achievements.push("Typed 100 Characters");
-            updateAchievementsDisplay();
+        function triggerExplosion(index) {
+            explosionDiv.style.left = `${userInput.getBoundingClientRect().left + (index * 10)}px`;
+            explosionDiv.style.top = `${userInput.getBoundingClientRect().top + 10}px`;
+            explosionDiv.style.display = 'block';
+            setTimeout(() => {
+                explosionDiv.style.display = 'none';
+            }, 500);
         }
-        localStorage.setItem("achievements", JSON.stringify(achievements));
-    }
 
-    function updateAchievementsDisplay() {
-        const achievementsDiv = document.getElementById('achievements');
-        achievementsDiv.innerHTML = achievements.map(a => `<div class="badge">${a}</div>`).join('');
-    }
+        function spawnPowerUp() {
+            const powerUp = document.createElement("div");
+            powerUp.classList.add("power-up");
+            powerUp.innerText = "$";
+            powerUp.style.left = `${Math.random() * 100}%`;
+            document.body.appendChild(powerUp);
 
-    function resetPowerUps() {
-        document.getElementById('power-ups').innerHTML = '';
-        generatePowerUps();
-    }
+            setTimeout(() => {
+                powerUp.remove();
+            }, 5000);
 
-    function generatePowerUps() {
-        const powerUps = ["Shield", "Slow Time", "Double Points"];
-        powerUps.forEach(power => {
-            const powerUpDiv = document.createElement('div');
-            powerUpDiv.className = 'power-up';
-            powerUpDiv.innerText = power;
-            powerUpDiv.onclick = () => activatePowerUp(power);
-            document.getElementById('power-ups').appendChild(powerUpDiv);
-        });
-    }
+            powerUp.addEventListener("animationend", () => {
+                powerUp.remove();
+            });
 
-    function activatePowerUp(power) {
-        alert(`Activated: ${power}`);
-        // Implement power-up effects (basic example)
-        switch (power) {
-            case "Shield":
-                // Prevent character loss for a short period
-                break;
-            case "Slow Time":
-                // Pause the timer
+            powerUp.onclick = function() {
+                collectPowerUp();
+                powerUp.remove();
+            };
+        }
+
+        function collectPowerUp() {
+            if (powerUpActive) return; // If a power-up is active, do nothing
+            const powerUpTypes = ["shield", "slow", "double"];
+            powerUpType = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+            powerUpActive = true;
+
+            if (powerUpType === "shield") {
+                setTimeout(() => {
+                    powerUpActive = false;
+                }, 10000);
+            } else if (powerUpType === "slow") {
                 clearInterval(timer);
-                break;
-            case "Double Points":
-                // Double the points for a limited time
-                break;
+                setTimeout(() => {
+                    timeLeft += 5; // Give extra time
+                    startTimer();
+                }, 5000);
+            } else if (powerUpType === "double") {
+                const originalScore = score;
+                setTimeout(() => {
+                    powerUpActive = false;
+                    score = originalScore; // Reset score to original after time
+                }, 10000);
+            }
         }
-    }
 
-    document.getElementById('shareLink').onclick = function() {
-        alert("Share this game link!");
-    };
+        function updateScore() {
+            scoreDisplay.innerText = score;
+            checkAchievements();
+        }
 
-    startGame(); // Initialize game on load
-</script>
+        function checkAchievements() {
+            if (score >= 100 && !achievements.type100Chars) {
+                achievements.type100Chars = true;
+                saveAchievements();
+            }
+        }
+
+        function checkInput() {
+            if (userInput.value === document.getElementById("meaningful-sentence").innerText) {
+                clearInterval(timer);
+                score += 100; // Increase bonus points for winning
+                updateScore();
+                resultDisplay.innerText = "You win! Great job!";
+                resultDisplay.classList.remove("hidden");
+                downloadButton.classList.remove("hidden");
+                if (!achievements.firstWin) {
+                    achievements.firstWin = true;
+                    saveAchievements();
+                }
+            }
+        }
+
+        userInput.addEventListener('input', (e) => {
+            const regex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]*$/;
+            if (!regex.test(e.target.value)) {
+                e.target.value = e.target.value.slice(0, -1);
+            } else {
+                score += 2; // Increase points for correct input
+                updateScore();
+            }
+            checkInput();
+        });
+
+        document.getElementById("difficulty").addEventListener('change', (e) => {
+            clearInterval(timer);
+            timeLeft = 30;
+            timerDisplay.innerText = timeLeft;
+            const interval = parseInt(e.target.value);
+            setInterval(randomExplosion, interval);
+            startTimer();
+        });
+
+        function randomSentence() {
+            const randomIndex = Math.floor(Math.random() * meaningfulSentences.length);
+            document.getElementById("meaningful-sentence").innerText = meaningfulSentences[randomIndex];
+        }
+
+        // Initialize game
+        randomSentence();
+        startTimer();
+        setInterval(randomExplosion, 1500); // Default interval for the first run
+
+        // Download achievements as an image
+        downloadButton.onclick = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 300;
+            canvas.height = 200;
+            ctx.fillStyle = '#121212';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#E0E0E0';
+            ctx.font = '16px Arial';
+
+            // Center the title
+            ctx.textAlign = 'center';
+            ctx.fillText('Achievements:', canvas.width / 2, 20);
+
+            let y = 40;
+            for (const [key, value] of Object.entries(achievements)) {
+                ctx.fillText(`${key}: ${value ? 'Unlocked' : 'Locked'}`, canvas.width / 2, y);
+                y += 20;
+            }
+
+            const link = document.createElement('a');
+            link.download = 'achievements.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        };
+
+    </script>
 
 </body>
 </html>
