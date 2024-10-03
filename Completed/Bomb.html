@@ -16,6 +16,8 @@
             height: 100vh;
             margin: 0;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
         }
         h1 {
             margin-bottom: 20px;
@@ -59,6 +61,28 @@
         .hidden {
             display: none;
         }
+        .power-up {
+            position: absolute;
+            color: cyan;
+            font-size: 24px;
+            animation: fall 5s linear forwards;
+        }
+        @keyframes fall {
+            0% { top: -50px; }
+            100% { top: 100vh; }
+        }
+        .badge {
+            display: inline-block;
+            margin: 5px;
+            padding: 5px 10px;
+            background: teal;
+            border-radius: 3px;
+            color: white;
+        }
+        #score {
+            margin: 20px;
+            font-size: 24px;
+        }
         @media (max-width: 600px) {
             input {
                 font-size: 16px;
@@ -72,6 +96,7 @@
 <body>
 
     <h1 id="meaningful-sentence">The quick brown fox jumps over the lazy dog.</h1>
+    <div id="score">Score: <span id="score-value">0</span></div>
     <div class="difficulty">
         <label for="difficulty">Select Difficulty:</label>
         <select id="difficulty">
@@ -92,6 +117,7 @@
     </div>
     <p id="timer">Time left: <span id="time-left">30</span> seconds</p>
     <p id="result" class="hidden"></p>
+    <button id="share-button" class="hidden">Share Score</button>
 
     <script>
         const meaningfulSentences = [
@@ -110,9 +136,21 @@
         const userInput = document.getElementById("user-input");
         const explosionDiv = document.getElementById("explosion");
         const timerDisplay = document.getElementById("time-left");
+        const scoreDisplay = document.getElementById("score-value");
         const resultDisplay = document.getElementById("result");
+        const shareButton = document.getElementById("share-button");
         let timer;
         let timeLeft = 30;
+        let score = 0;
+        let powerUpActive = false;
+        let powerUpType = "";
+        
+        // Achievements
+        const achievements = {
+            firstWin: false,
+            type100Chars: false,
+            play1Hour: false,
+        };
 
         function startTimer() {
             timer = setInterval(() => {
@@ -132,6 +170,8 @@
             if (destroyEndOnly) {
                 if (userInput.value.length > 0) {
                     userInput.value = userInput.value.slice(0, -1);
+                    score -= 10; // Lose points for destruction
+                    updateScore();
                     triggerExplosion(userInput.value.length);
                 }
             } else {
@@ -139,9 +179,12 @@
                 if (validInputs.length > 0) {
                     const randomIndex = Math.floor(Math.random() * validInputs.length);
                     userInput.value = userInput.value.slice(0, randomIndex) + userInput.value.slice(randomIndex + 1);
+                    score -= 10; // Lose points for destruction
+                    updateScore();
                     triggerExplosion(randomIndex);
                 }
             }
+            spawnPowerUp();
         }
 
         function triggerExplosion(index) {
@@ -153,11 +196,80 @@
             }, 500);
         }
 
+        function spawnPowerUp() {
+            const powerUp = document.createElement("div");
+            powerUp.classList.add("power-up");
+            powerUp.innerText = "$";
+            powerUp.style.left = `${Math.random() * 100}%`;
+            document.body.appendChild(powerUp);
+
+            setTimeout(() => {
+                powerUp.remove();
+            }, 5000);
+
+            powerUp.addEventListener("animationend", () => {
+                powerUp.remove();
+            });
+
+            powerUp.onclick = function() {
+                collectPowerUp();
+                powerUp.remove();
+            };
+        }
+
+        function collectPowerUp() {
+            if (powerUpActive) return; // If a power-up is active, do nothing
+            const powerUpTypes = ["shield", "slow", "double"];
+            powerUpType = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+            powerUpActive = true;
+
+            if (powerUpType === "shield") {
+                alert("Shield Activated! You won't lose a character for 10 seconds.");
+                setTimeout(() => {
+                    powerUpActive = false;
+                    alert("Shield expired.");
+                }, 10000);
+            } else if (powerUpType === "slow") {
+                alert("Slow Time Activated! Timer paused for 5 seconds.");
+                clearInterval(timer);
+                setTimeout(() => {
+                    timeLeft += 5; // Give extra time
+                    startTimer();
+                }, 5000);
+            } else if (powerUpType === "double") {
+                alert("Double Points Activated! Score will be doubled for 10 seconds.");
+                const originalScore = score;
+                setTimeout(() => {
+                    powerUpActive = false;
+                    score = originalScore; // Reset score to original after time
+                }, 10000);
+            }
+        }
+
+        function updateScore() {
+            scoreDisplay.innerText = score;
+            checkAchievements();
+        }
+
+        function checkAchievements() {
+            if (score >= 100 && !achievements.type100Chars) {
+                achievements.type100Chars = true;
+                alert("Achievement Unlocked: Typed 100 Characters!");
+            }
+        }
+
         function checkInput() {
             if (userInput.value === document.getElementById("meaningful-sentence").innerText) {
                 clearInterval(timer);
+                score += 50; // Bonus points for winning
+                updateScore();
                 resultDisplay.innerText = "You win! Great job!";
                 resultDisplay.classList.remove("hidden");
+                shareButton.classList.remove("hidden");
+                if (!achievements.firstWin) {
+                    achievements.firstWin = true;
+                    alert("Achievement Unlocked: First Win!");
+                }
             }
         }
 
@@ -165,6 +277,9 @@
             const regex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]*$/;
             if (!regex.test(e.target.value)) {
                 e.target.value = e.target.value.slice(0, -1);
+            } else {
+                score += 1; // Gain points for correct input
+                updateScore();
             }
             checkInput();
         });
@@ -187,6 +302,15 @@
         randomSentence();
         startTimer();
         setInterval(randomExplosion, 1500); // Default interval for the first run
+
+        // Share functionality
+        shareButton.onclick = function() {
+            const url = encodeURIComponent(window.location.href);
+            const scoreText = `I scored ${score} points in the Explosive Sentence Game!`;
+            const shareUrl = `https://twitter.com/intent/tweet?text=${scoreText}&url=${url}`;
+            window.open(shareUrl, '_blank');
+        };
+
     </script>
 
 </body>
