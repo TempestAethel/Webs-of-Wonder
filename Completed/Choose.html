@@ -6,7 +6,7 @@
     <title>Decision Maker</title>
     <style>
         body {
-            background-color: #121212;
+            background: linear-gradient(135deg, #121212, #1e1e1e);
             color: #ffffff;
             font-family: Arial, sans-serif;
             display: flex;
@@ -21,8 +21,9 @@
             padding: 20px;
             border-radius: 10px;
             background-color: #1e1e1e;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
             max-width: 400px;
+            width: 100%;
         }
         h1 {
             margin-bottom: 20px;
@@ -41,25 +42,38 @@
             font-size: 1.2em;
             color: #ffffff;
             background-color: #6200ea;
-            border: none;
+            border: 1px solid transparent;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
         }
         button:hover {
             background-color: #3700b3;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        button:focus {
+            outline: none;
+        }
+        button.add {
+            border-color: cyan;
+        }
+        button.make {
+            border-color: teal;
         }
         #result {
             margin-top: 20px;
             font-size: 1.5em;
+            text-align: center; /* Center the decision text */
+            opacity: 0; /* Start hidden for animation */
+            transition: opacity 0.5s ease;
         }
         ul {
             list-style: none;
             padding: 0;
             margin: 20px 0;
+            text-align: left; /* Align text to the left */
         }
         li {
             display: flex;
@@ -69,6 +83,10 @@
             background-color: #333;
             border-radius: 5px;
             margin-bottom: 5px;
+            transition: background-color 0.3s;
+        }
+        li:hover {
+            background-color: #444;
         }
         .remove {
             background-color: transparent;
@@ -80,17 +98,36 @@
         .checkbox {
             margin-right: 10px;
         }
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #ffffff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 10px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 1em;
+            transition: visibility 0s, opacity 0.5s linear;
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Decision Maker</h1>
-        <input type="text" id="customChoice" placeholder="Add your choices separated by commas...">
-        <button onclick="addChoices()">Add Choices</button>
-        <button onclick="makeDecision()">Make a Decision!</button>
+        <input type="text" id="customChoice" placeholder="Add choices, e.g., Yes, No, Maybe...">
+        <button class="add" onclick="addChoices()">Add Choices</button>
+        <button class="make" onclick="makeDecision()">Make a Decision!</button>
         <div id="result"></div>
         <ul id="choiceList"></ul>
     </div>
+
+    <div id="toast"></div>
 
     <script>
         const choices = ["Yes", "No", "Maybe", "Maybe not", "Definitely"];
@@ -101,19 +138,19 @@
         function addChoices() {
             const input = document.getElementById("customChoice");
             const newChoices = input.value.split(',')
-                .map(choice => choice.trim())
-                .filter(choice => choice); // Trim whitespace and filter out empty strings
+                .map(choice => choice.trim().toLowerCase()) // Trim and convert to lowercase
+                .filter(choice => choice); // Filter out empty strings
 
             // Remove duplicates
             newChoices.forEach(choice => {
-                if (!choices.includes(choice)) {
-                    choices.push(choice);
+                if (!choices.map(c => c.toLowerCase()).includes(choice)) {
+                    choices.push(choice.charAt(0).toUpperCase() + choice.slice(1)); // Add back in proper case
                 }
             });
 
             input.value = ""; // Clear the input field
             displayChoices();
-            alert("Choices added: " + newChoices.join(', '));
+            showToast("Choices added: " + newChoices.join(', '));
         }
 
         function displayChoices() {
@@ -157,9 +194,25 @@
                 return;
             }
 
-            const randomIndex = Math.floor(Math.random() * selectedChoices.length);
-            const result = selectedChoices[randomIndex];
-            document.getElementById("result").innerText = "Decision: " + result;
+            document.getElementById("result").style.opacity = 0; // Fade out previous result
+            setTimeout(() => {
+                const randomIndex = Math.floor(Math.random() * selectedChoices.length);
+                const result = selectedChoices[randomIndex];
+                document.getElementById("result").innerText = "Decision: " + result;
+                document.getElementById("result").style.opacity = 1; // Fade in new result
+            }, 2000); // 2 seconds delay for decision animation
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.style.visibility = 'visible';
+            toast.style.opacity = 1;
+
+            setTimeout(() => {
+                toast.style.visibility = 'hidden';
+                toast.style.opacity = 0;
+            }, 3000);
         }
     </script>
 </body>
