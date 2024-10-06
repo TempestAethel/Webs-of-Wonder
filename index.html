@@ -11,22 +11,25 @@
             color: #fff;
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        #menu {
+            background-color: #444;
+            border-radius: 8px;
+            padding: 20px;
+            width: 300px;
         }
         h1 {
             text-align: center;
         }
-        #input-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
         input[type="text"] {
             padding: 10px;
             font-size: 16px;
-            border: 1px solid #444;
+            border: 1px solid #666;
             border-radius: 5px;
-            width: 300px;
-            margin-right: 10px;
+            width: calc(100% - 22px);
+            margin-bottom: 10px;
         }
         button {
             padding: 10px 15px;
@@ -35,6 +38,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
+            width: 100%;
         }
         button:hover {
             background-color: #555;
@@ -43,24 +47,23 @@
         ul {
             list-style-type: none;
             padding: 0;
+            margin: 10px 0;
         }
         li {
             display: flex;
             align-items: center;
             margin: 5px 0;
         }
-        .choice {
-            margin-right: 10px;
+        .highlight {
+            border: 2px solid #0f0;
+            background-color: rgba(0, 255, 0, 0.1);
+            padding: 10px;
         }
         .result {
             margin-top: 20px;
             font-size: 24px;
             text-align: center;
             display: none;
-        }
-        .highlight {
-            border: 2px solid #0f0;
-            background-color: rgba(0, 255, 0, 0.1);
         }
         .toast {
             position: fixed;
@@ -78,14 +81,14 @@
 </head>
 <body>
 
-    <h1>Decision Maker</h1>
-    <div id="input-container">
+    <div id="menu">
+        <h1>Decision Maker</h1>
         <input type="text" id="choice-input" placeholder="Enter choices, separated by commas">
         <button id="add-choice">Add Choices</button>
+        <ul id="choice-list"></ul>
+        <button id="make-decision">Make a Decision</button>
+        <div class="result" id="decision-result"></div>
     </div>
-    <ul id="choice-list"></ul>
-    <button id="make-decision">Make a Decision</button>
-    <div class="result" id="decision-result"></div>
     <div class="toast" id="toast"></div>
 
     <script>
@@ -98,33 +101,33 @@
 
         const choicesSet = new Set();
 
+        // Pre-fill initial choices
+        const initialChoices = ["Yes", "No", "Maybe", "Maybe Not", "Definitely"];
+        initialChoices.forEach(choice => addChoice(choice));
+
+        function addChoice(choice) {
+            const lowerCaseChoice = choice.toLowerCase();
+            if (!choicesSet.has(lowerCaseChoice)) {
+                choicesSet.add(lowerCaseChoice);
+                const li = document.createElement('li');
+                li.innerHTML = `<input type="checkbox" class="choice" value="${lowerCaseChoice}"> ${choice} <button class="remove-button">X</button>`;
+                choiceList.appendChild(li);
+
+                const removeButton = li.querySelector('.remove-button');
+                removeButton.addEventListener('click', () => {
+                    choicesSet.delete(lowerCaseChoice);
+                    choiceList.removeChild(li);
+                    showToast(`${choice} removed`);
+                });
+            } else {
+                showToast(`${choice} is a duplicate!`);
+            }
+        }
+
         addChoiceButton.addEventListener('click', () => {
             const input = choiceInput.value.split(',').map(choice => choice.trim()).filter(choice => choice);
-            let added = false;
-
-            input.forEach(choice => {
-                const lowerCaseChoice = choice.toLowerCase();
-                if (!choicesSet.has(lowerCaseChoice)) {
-                    choicesSet.add(lowerCaseChoice);
-                    const li = document.createElement('li');
-                    li.innerHTML = `<input type="checkbox" class="choice" value="${lowerCaseChoice}"> ${choice} <button class="remove-button">X</button>`;
-                    choiceList.appendChild(li);
-                    added = true;
-
-                    const removeButton = li.querySelector('.remove-button');
-                    removeButton.addEventListener('click', () => {
-                        choicesSet.delete(lowerCaseChoice);
-                        choiceList.removeChild(li);
-                        showToast(`${choice} removed`);
-                    });
-                } else {
-                    showToast(`${choice} is a duplicate!`);
-                }
-            });
-
-            if (added) {
-                choiceInput.value = '';
-            }
+            input.forEach(choice => addChoice(choice));
+            choiceInput.value = ''; // Clear the input
         });
 
         makeDecisionButton.addEventListener('click', () => {
