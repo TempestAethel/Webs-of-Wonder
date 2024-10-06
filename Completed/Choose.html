@@ -55,15 +55,14 @@
         .choice-item {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: space-between; /* Aligns items with space between */
             padding: 10px;
             margin: 5px 0;
             background: #444;
             border-radius: 5px;
-            transition: transform 0.3s, background 0.3s;
+            transition: background 0.3s;
         }
         .choice-item:hover {
-            transform: scale(1.05);
             background: #555;
         }
         .remove-button {
@@ -73,6 +72,12 @@
             color: white;
             cursor: pointer;
             padding: 5px;
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .result {
             text-align: center;
@@ -97,6 +102,14 @@
             opacity: 1;
             visibility: visible;
         }
+        .highlight {
+            border: 2px solid cyan; /* Cyan border for highlighted choices */
+            animation: highlightAnimation 0.5s forwards;
+        }
+        @keyframes highlightAnimation {
+            0% { border-color: transparent; }
+            100% { border-color: cyan; }
+        }
     </style>
 </head>
 <body>
@@ -104,7 +117,44 @@
         <h2>Decision Maker</h2>
         <input type="text" id="choiceInput" placeholder="Enter choices (e.g., Yes, No, Maybe)">
         <button id="addChoice">Add Choices</button>
-        <ul class="choice-list" id="choiceList"></ul>
+        <ul class="choice-list" id="choiceList">
+            <!-- Predefined choices -->
+            <li class="choice-item">
+                <label>
+                    <input type="checkbox" class="choiceCheckbox">
+                    <strong>Yes</strong>
+                </label>
+                <button class="remove-button" onclick="removeChoice(this)">X</button>
+            </li>
+            <li class="choice-item">
+                <label>
+                    <input type="checkbox" class="choiceCheckbox">
+                    <strong>No</strong>
+                </label>
+                <button class="remove-button" onclick="removeChoice(this)">X</button>
+            </li>
+            <li class="choice-item">
+                <label>
+                    <input type="checkbox" class="choiceCheckbox">
+                    <strong>Maybe not</strong>
+                </label>
+                <button class="remove-button" onclick="removeChoice(this)">X</button>
+            </li>
+            <li class="choice-item">
+                <label>
+                    <input type="checkbox" class="choiceCheckbox">
+                    <strong>Maybe</strong>
+                </label>
+                <button class="remove-button" onclick="removeChoice(this)">X</button>
+            </li>
+            <li class="choice-item">
+                <label>
+                    <input type="checkbox" class="choiceCheckbox">
+                    <strong>Definitely</strong>
+                </label>
+                <button class="remove-button" onclick="removeChoice(this)">X</button>
+            </li>
+        </ul>
         <button id="makeDecision">Make a Decision!</button>
         <div class="result" id="resultDisplay"></div>
     </div>
@@ -133,7 +183,7 @@
                     li.innerHTML = `
                         <label>
                             <input type="checkbox" class="choiceCheckbox">
-                            ${choice}
+                            <strong>${choice.charAt(0).toUpperCase() + choice.slice(1)}</strong>
                         </label>
                         <button class="remove-button" onclick="removeChoice(this)">X</button>
                     `;
@@ -166,18 +216,22 @@
         });
 
         function removeChoice(button) {
-            const item = button.parentElement;
+            const item = button.parentElement.parentElement; // Adjusted to access li
             const choiceText = item.innerText.trim();
             choices.delete(choiceText.toLowerCase());
             item.remove();
         }
 
         function highlightChoices(selectedChoices) {
+            let delay = 0;
             choiceList.querySelectorAll('.choice-item').forEach(item => {
                 const label = item.querySelector('label');
                 if (selectedChoices.includes(label.innerText.trim())) {
-                    item.style.backgroundColor = '#5cb85c'; // Highlight color
-                    setTimeout(() => item.style.backgroundColor = '#444', 1000);
+                    setTimeout(() => {
+                        item.classList.add('highlight');
+                        setTimeout(() => item.classList.remove('highlight'), 500); // Remove highlight after animation
+                    }, delay);
+                    delay += 300; // Increase delay for sequential highlighting
                 }
             });
         }
