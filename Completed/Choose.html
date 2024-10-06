@@ -223,16 +223,15 @@
     }
 
     function highlightChoices(selectedChoices, decision) {
+        // Remove highlight from all choices
         choiceList.querySelectorAll('.choice-item').forEach(item => {
-            const label = item.querySelector('label strong');
-            if (!selectedChoices.includes(label.innerText.trim())) {
-                item.classList.remove('highlight'); // Remove highlight for unchecked choices
-            }
+            item.classList.remove('highlight');
         });
 
+        // Highlight the chosen decision
         const chosenItem = Array.from(choiceList.children).find(item => item.innerText.includes(decision));
         if (chosenItem) {
-            chosenItem.classList.add('highlight'); // Highlight only the selected decision
+            chosenItem.classList.add('highlight');
         }
     }
 
