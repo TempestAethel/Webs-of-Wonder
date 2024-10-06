@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,17 +23,20 @@
             padding: 20px;
             max-width: 400px;
             width: 100%;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
         }
         h2 {
             text-align: center;
         }
         input[type="text"] {
-            width: calc(100% - 22px); /* Adjusted to match button width */
+            width: 100%; /* Full width to match button */
             padding: 10px;
             margin-bottom: 10px;
             border: none;
             border-radius: 5px;
+            background: #333;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
         }
         button {
             width: 100%;
@@ -42,6 +46,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s, transform 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
         }
         button:hover {
             background: #00bfff;
@@ -50,17 +55,18 @@
         .choice-list {
             list-style: none;
             padding: 0;
-            margin: 0; /* Remove default margin */
+            margin: 0;
         }
         .choice-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 10px;
-            margin: 15px 0; /* Increased gap between choices */
+            margin: 15px 0;
             background: #444;
             border-radius: 5px;
             transition: background 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
         .choice-item:hover {
             background: #555;
@@ -84,6 +90,10 @@
             opacity: 0;
             transition: opacity 0.5s;
         }
+        .highlight {
+            border: 2px solid cyan;
+            background: rgba(0, 0, 0, 0.5);
+        }
         .toast {
             position: fixed;
             bottom: 20px;
@@ -101,14 +111,6 @@
             opacity: 1;
             visibility: visible;
         }
-        .highlight {
-            border: 2px solid cyan;
-            animation: highlightAnimation 1s forwards; /* Adjusted animation */
-        }
-        @keyframes highlightAnimation {
-            0% { border-color: transparent; transform: scale(1); }
-            100% { border-color: cyan; transform: scale(1.05); }
-        }
     </style>
 </head>
 <body>
@@ -117,7 +119,6 @@
         <input type="text" id="choiceInput" placeholder="Enter choices (e.g., Yes, No, Maybe)">
         <button id="addChoice">Add Choices</button>
         <ul class="choice-list" id="choiceList">
-            <!-- Predefined choices -->
             <li class="choice-item">
                 <label>
                     <input type="checkbox" class="choiceCheckbox" checked>
@@ -206,7 +207,7 @@
                 return;
             }
             const decision = selectedChoices[Math.floor(Math.random() * selectedChoices.length)];
-            resultDisplay.innerText = `Decided: ${decision}`;
+            resultDisplay.innerText = `You decided: ${decision}`;
             resultDisplay.style.opacity = 0;
             setTimeout(() => {
                 resultDisplay.style.opacity = 1;
@@ -215,33 +216,24 @@
         });
 
         function removeChoice(button) {
-            const item = button.parentElement.parentElement; // Adjusted to access li
+            const item = button.parentElement.parentElement;
             const choiceText = item.innerText.trim();
             choices.delete(choiceText.toLowerCase());
             item.remove();
         }
 
         function highlightChoices(selectedChoices, decision) {
-            let index = 0;
-
-            const interval = setInterval(() => {
-                if (index >= selectedChoices.length) {
-                    clearInterval(interval);
-                    return;
+            choiceList.querySelectorAll('.choice-item').forEach(item => {
+                const label = item.querySelector('label strong');
+                if (selectedChoices.includes(label.innerText.trim())) {
+                    item.classList.remove('highlight');
                 }
+            });
 
-                const currentChoice = selectedChoices[index];
-                const item = Array.from(choiceList.children).find(item => item.innerText.includes(currentChoice));
-                
-                // Clear previous highlights
-                choiceList.querySelectorAll('.choice-item').forEach(item => item.classList.remove('highlight'));
-
-                if (item) {
-                    item.classList.add('highlight');
-                }
-
-                index++;
-            }, 1000); // Change this value for speed of looping
+            const chosenItem = Array.from(choiceList.children).find(item => item.innerText.includes(decision));
+            if (chosenItem) {
+                chosenItem.classList.add('highlight');
+            }
         }
 
         function showToast(message) {
