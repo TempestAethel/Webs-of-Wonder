@@ -30,7 +30,6 @@
         input[type="text"] {
             width: 100%; 
             padding: 10px;
-            justify-content: center;
             margin-bottom: 10px;
             border: none;
             border-radius: 5px;
@@ -160,88 +159,86 @@
     </div>
     <div class="toast" id="toast">Choice added or duplicate detected!</div>
 
-<script>
-    const choiceInput = document.getElementById('choiceInput');
-    const addChoiceButton = document.getElementById('addChoice');
-    const choiceList = document.getElementById('choiceList');
-    const makeDecisionButton = document.getElementById('makeDecision');
-    const resultDisplay = document.getElementById('resultDisplay');
-    const toast = document.getElementById('toast');
-    let choices = new Set();
+    <script>
+        const choiceInput = document.getElementById('choiceInput');
+        const addChoiceButton = document.getElementById('addChoice');
+        const choiceList = document.getElementById('choiceList');
+        const makeDecisionButton = document.getElementById('makeDecision');
+        const resultDisplay = document.getElementById('resultDisplay');
+        const toast = document.getElementById('toast');
+        let choices = new Set();
 
-    addChoiceButton.addEventListener('click', () => {
-        const inputValue = choiceInput.value.split(',').map(choice => choice.trim().toLowerCase());
-        let addedChoices = false;
+        addChoiceButton.addEventListener('click', () => {
+            const inputValue = choiceInput.value.split(',').map(choice => choice.trim().toLowerCase());
+            let addedChoices = false;
 
-        inputValue.forEach(choice => {
-            if (choice && !choices.has(choice)) {
-                choices.add(choice);
-                addedChoices = true;
+            inputValue.forEach(choice => {
+                if (choice && !choices.has(choice)) {
+                    choices.add(choice);
+                    addedChoices = true;
 
-                const li = document.createElement('li');
-                li.classList.add('choice-item');
-                li.innerHTML = `
-                    <label>
-                        <input type="checkbox" class="choiceCheckbox" checked>
-                        <strong>${choice.charAt(0).toUpperCase() + choice.slice(1)}</strong>
-                    </label>
-                    <button class="remove-button" onclick="removeChoice(this)">X</button>
-                `;
-                choiceList.appendChild(li);
+                    const li = document.createElement('li');
+                    li.classList.add('choice-item');
+                    li.innerHTML = `
+                        <label>
+                            <input type="checkbox" class="choiceCheckbox" checked>
+                            <strong>${choice.charAt(0).toUpperCase() + choice.slice(1)}</strong>
+                        </label>
+                        <button class="remove-button" onclick="removeChoice(this)">X</button>
+                    `;
+                    choiceList.appendChild(li);
+                }
+            });
+
+            if (addedChoices) {
+                showToast('Choice added!');
+            } else {
+                showToast('Duplicate choice detected!');
             }
+
+            choiceInput.value = '';
         });
 
-        if (addedChoices) {
-            showToast('Choice added!');
-        } else {
-            showToast('Duplicate choice detected!');
-        }
-
-        choiceInput.value = '';
-    });
-
-    makeDecisionButton.addEventListener('click', () => {
-        const selectedChoices = Array.from(choiceList.querySelectorAll('.choiceCheckbox:checked')).map(checkbox => checkbox.parentElement.innerText.trim());
-        if (selectedChoices.length === 0) {
-            showToast('No choices selected!');
-            return;
-        }
-        const decision = selectedChoices[Math.floor(Math.random() * selectedChoices.length)];
-        resultDisplay.innerText = `Decided: ${decision}`;
-        resultDisplay.style.opacity = 0;
-        setTimeout(() => {
-            resultDisplay.style.opacity = 1;
-            highlightChoices(selectedChoices, decision);
-        }, 100);
-    });
-
-    function removeChoice(button) {
-        const item = button.parentElement.parentElement;
-        const choiceText = item.innerText.trim();
-        choices.delete(choiceText.toLowerCase());
-        item.remove();
-    }
-
-    function highlightChoices(selectedChoices, decision) {
-        // Remove highlight from all choices
-        choiceList.querySelectorAll('.choice-item').forEach(item => {
-            item.classList.remove('highlight');
+        makeDecisionButton.addEventListener('click', () => {
+            const selectedChoices = Array.from(choiceList.querySelectorAll('.choiceCheckbox:checked')).map(checkbox => checkbox.parentElement.innerText.trim());
+            if (selectedChoices.length === 0) {
+                showToast('No choices selected!');
+                return;
+            }
+            const decision = selectedChoices[Math.floor(Math.random() * selectedChoices.length)];
+            resultDisplay.innerText = `Decided: ${decision}`;
+            resultDisplay.style.opacity = 0;
+            setTimeout(() => {
+                resultDisplay.style.opacity = 1;
+                highlightChoices(selectedChoices, decision);
+            }, 100);
         });
 
-        // Highlight the chosen decision
-        const chosenItem = Array.from(choiceList.children).find(item => item.innerText.includes(decision));
-        if (chosenItem) {
-            chosenItem.classList.add('highlight');
+        function removeChoice(button) {
+            const item = button.closest('.choice-item');
+            const choiceText = item.innerText.trim();
+            choices.delete(choiceText.toLowerCase());
+            item.remove();
         }
-    }
 
-    function showToast(message) {
-        toast.innerText = message;
-        toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 2000);
-    }
-</script>
+        function highlightChoices(selectedChoices, decision) {
+            choiceList.querySelectorAll('.choice-item').forEach(item => {
+                item.classList.remove('highlight');
+            });
+
+            const chosenItem = Array.from(choiceList.children).find(item => item.innerText.includes(decision));
+            if (chosenItem) {
+                chosenItem.classList.add('highlight');
+            }
+        }
+
+        function showToast(message) {
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
