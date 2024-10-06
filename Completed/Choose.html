@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -29,8 +28,9 @@
             text-align: center;
         }
         input[type="text"] {
-            width: 100%; /* Full width to match button */
+            width: 100%; 
             padding: 10px;
+            justify-content: center;
             margin-bottom: 10px;
             border: none;
             border-radius: 5px;
@@ -207,7 +207,7 @@
                 return;
             }
             const decision = selectedChoices[Math.floor(Math.random() * selectedChoices.length)];
-            resultDisplay.innerText = `You decided: ${decision}`;
+            resultDisplay.innerText = `Decided: ${decision}`;
             resultDisplay.style.opacity = 0;
             setTimeout(() => {
                 resultDisplay.style.opacity = 1;
