@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision Maker</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        input {
+            padding: 10px;
+            font-size: 1em;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+        }
+        button {
+            padding: 15px 25px;
+            font-size: 1.2em;
+            color: #ffffff;
+            background-color: #6200ea;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        button:hover {
+            background-color: #3700b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+            background-color: #333;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        .remove {
+            background-color: red;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Decision Maker</h1>
+        <input type="text" id="customChoice" placeholder="Add your choice here...">
+        <button onclick="addChoice()">Add Choice</button>
+        <button onclick="makeDecision()">Make a Decision!</button>
+        <div id="result"></div>
+        <ul id="choiceList"></ul>
+    </div>
+
+    <script>
+        const choices = ["Yes", "No", "Maybe", "Ask again later", "Definitely"];
+
+        function addChoice() {
+            const input = document.getElementById("customChoice");
+            const newChoice = input.value.trim();
+
+            if (newChoice) {
+                choices.push(newChoice);
+                input.value = ""; // Clear the input field
+                displayChoices();
+                alert("Choice added: " + newChoice);
+            } else {
+                alert("Please enter a valid choice.");
+            }
+        }
+
+        function removeChoice(index) {
+            choices.splice(index, 1);
+            displayChoices();
+        }
+
+        function displayChoices() {
+            const choiceList = document.getElementById("choiceList");
+            choiceList.innerHTML = ""; // Clear existing list
+
+            choices.forEach((choice, index) => {
+                const li = document.createElement("li");
+                li.textContent = choice;
+
+                const removeButton = document.createElement("button");
+                removeButton.textContent = "Remove";
+                removeButton.className = "remove";
+                removeButton.onclick = () => removeChoice(index);
+
+                li.appendChild(removeButton);
+                choiceList.appendChild(li);
+            });
+        }
+
+        function makeDecision() {
+            const randomIndex = Math.floor(Math.random() * choices.length);
+            const result = choices[randomIndex];
+            document.getElementById("result").innerText = "Decision: " + result;
+        }
+    </script>
+</body>
+</html>
