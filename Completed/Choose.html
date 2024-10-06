@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -28,7 +29,7 @@
             text-align: center;
         }
         input[type="text"] {
-            width: calc(100% - 20px); /* Same width as button */
+            width: calc(100% - 22px); /* Adjusted to match button width */
             padding: 10px;
             margin-bottom: 10px;
             border: none;
@@ -57,7 +58,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 10px;
-            margin: 10px 0; /* Increased gap between choices */
+            margin: 15px 0; /* Increased gap between choices */
             background: #444;
             border-radius: 5px;
             transition: background 0.3s;
@@ -103,11 +104,11 @@
         }
         .highlight {
             border: 2px solid cyan;
-            animation: highlightAnimation 0.5s forwards;
+            animation: highlightAnimation 1s infinite alternate; /* Infinite animation */
         }
         @keyframes highlightAnimation {
-            0% { border-color: transparent; }
-            100% { border-color: cyan; }
+            0% { border-color: transparent; transform: scale(1); }
+            100% { border-color: cyan; transform: scale(1.05); }
         }
     </style>
 </head>
@@ -210,7 +211,7 @@
             resultDisplay.style.opacity = 0;
             setTimeout(() => {
                 resultDisplay.style.opacity = 1;
-                highlightChoices(selectedChoices);
+                highlightChoices(selectedChoices, decision);
             }, 100);
         });
 
@@ -221,20 +222,22 @@
             item.remove();
         }
 
-        function highlightChoices(selectedChoices) {
-            let delay = 0;
-            let totalAnimationTime = 0;
-
-            selectedChoices.forEach(choice => {
-                const item = Array.from(choiceList.children).find(item => item.innerText.includes(choice));
-                if (item) {
-                    setTimeout(() => {
-                        item.classList.add('highlight');
-                        setTimeout(() => item.classList.remove('highlight'), 500); // Remove highlight after animation
-                    }, totalAnimationTime);
-                    totalAnimationTime += 500; // Adjust this to change the speed of highlighting
+        function highlightChoices(selectedChoices, decision) {
+            choiceList.querySelectorAll('.choice-item').forEach(item => {
+                const label = item.querySelector('label strong');
+                if (selectedChoices.includes(label.innerText.trim())) {
+                    item.classList.add('highlight');
+                } else {
+                    item.classList.remove('highlight');
                 }
             });
+
+            // Stop the animation on the chosen decision
+            const chosenItem = Array.from(choiceList.children).find(item => item.innerText.includes(decision));
+            if (chosenItem) {
+                chosenItem.classList.remove('highlight');
+                chosenItem.classList.add('highlight');
+            }
         }
 
         function showToast(message) {
