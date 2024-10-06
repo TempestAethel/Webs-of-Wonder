@@ -1,160 +1,60 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decision Maker</title>
+    <title>Webs of Wonder</title>
     <style>
         body {
+            background-color: #121212;
+            color: #ffffff;
             font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom, #333, #222);
-            color: #fff;
-            margin: 0;
-            padding: 20px;
             display: flex;
             justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-        #menu {
-            background-color: #444;
-            border-radius: 8px;
+        .container {
+            text-align: center;
             padding: 20px;
-            width: 300px;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
         h1 {
-            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
         }
-        input[type="text"] {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #666;
-            border-radius: 5px;
-            width: calc(100% - 22px);
-            margin-bottom: 10px;
-        }
-        button {
-            padding: 10px 15px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #555;
-            transform: translateY(-2px);
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
+        a {
+            display: inline-block;
             margin: 10px 0;
-        }
-        li {
-            display: flex;
-            align-items: center;
-            margin: 5px 0;
-        }
-        .highlight {
-            border: 2px solid #0f0;
-            background-color: rgba(0, 255, 0, 0.1);
-            padding: 10px;
-        }
-        .result {
-            margin-top: 20px;
-            font-size: 24px;
-            text-align: center;
-            display: none;
-        }
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #444;
-            color: white;
-            padding: 10px;
+            padding: 15px 25px;
+            font-size: 1.2em;
+            color: #ffffff;
+            background-color: #6200ea;
             border-radius: 5px;
-            display: none;
-            transition: opacity 0.5s;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        a:hover {
+            background-color: #3700b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Webs-of-Wonders</h1>
+        <a href="Completed/Bomb.html">Bomb</a>
+        <a href="Completed/RPS.html">RPS</a>
+        <a href="Completed/Choose.html">Select</a>
+        <!--
+        <a href="Completed/AnotherPage.html">Go to Another Page</a>
+        <a href="Completed/YetAnotherPage.html">Go to Yet Another Page</a>
+        -->
 
-    <div id="menu">
-        <h1>Decision Maker</h1>
-        <input type="text" id="choice-input" placeholder="Enter choices, separated by commas">
-        <button id="add-choice">Add Choices</button>
-        <ul id="choice-list"></ul>
-        <button id="make-decision">Make a Decision</button>
-        <div class="result" id="decision-result"></div>
     </div>
-    <div class="toast" id="toast"></div>
-
-    <script>
-        const choiceInput = document.getElementById('choice-input');
-        const addChoiceButton = document.getElementById('add-choice');
-        const choiceList = document.getElementById('choice-list');
-        const makeDecisionButton = document.getElementById('make-decision');
-        const decisionResult = document.getElementById('decision-result');
-        const toast = document.getElementById('toast');
-
-        const choicesSet = new Set();
-
-        // Pre-fill initial choices
-        const initialChoices = ["Yes", "No", "Maybe", "Maybe Not", "Definitely"];
-        initialChoices.forEach(choice => addChoice(choice));
-
-        function addChoice(choice) {
-            const lowerCaseChoice = choice.toLowerCase();
-            if (!choicesSet.has(lowerCaseChoice)) {
-                choicesSet.add(lowerCaseChoice);
-                const li = document.createElement('li');
-                li.innerHTML = `<input type="checkbox" class="choice" value="${lowerCaseChoice}"> ${choice} <button class="remove-button">X</button>`;
-                choiceList.appendChild(li);
-
-                const removeButton = li.querySelector('.remove-button');
-                removeButton.addEventListener('click', () => {
-                    choicesSet.delete(lowerCaseChoice);
-                    choiceList.removeChild(li);
-                    showToast(`${choice} removed`);
-                });
-            } else {
-                showToast(`${choice} is a duplicate!`);
-            }
-        }
-
-        addChoiceButton.addEventListener('click', () => {
-            const input = choiceInput.value.split(',').map(choice => choice.trim()).filter(choice => choice);
-            input.forEach(choice => addChoice(choice));
-            choiceInput.value = ''; // Clear the input
-        });
-
-        makeDecisionButton.addEventListener('click', () => {
-            const checkedChoices = Array.from(choiceList.querySelectorAll('input[type="checkbox"]:checked'))
-                .map(input => input.value);
-            if (checkedChoices.length > 0) {
-                const randomChoice = checkedChoices[Math.floor(Math.random() * checkedChoices.length)];
-                decisionResult.textContent = `Decision: ${randomChoice}`;
-                decisionResult.classList.add('highlight');
-                decisionResult.style.display = 'block';
-            } else {
-                showToast('No choices selected!');
-                decisionResult.style.display = 'none';
-            }
-        });
-
-        function showToast(message) {
-            toast.textContent = message;
-            toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.opacity = 0;
-                setTimeout(() => {
-                    toast.style.display = 'none';
-                    toast.style.opacity = 1;
-                }, 500);
-            }, 2000);
-        }
-    </script>
 </body>
 </html>
