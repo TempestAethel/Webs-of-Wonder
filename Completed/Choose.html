@@ -71,44 +71,49 @@
             margin-bottom: 5px;
         }
         .remove {
-            background-color: red;
+            background-color: transparent;
             border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
+            color: red;
             cursor: pointer;
+            font-size: 1.2em;
+        }
+        .checkbox {
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Decision Maker</h1>
-        <input type="text" id="customChoice" placeholder="Add your choice here...">
-        <button onclick="addChoice()">Add Choice</button>
+        <input type="text" id="customChoice" placeholder="Add your choices separated by commas...">
+        <button onclick="addChoices()">Add Choices</button>
         <button onclick="makeDecision()">Make a Decision!</button>
         <div id="result"></div>
         <ul id="choiceList"></ul>
     </div>
 
     <script>
-        const choices = ["Yes", "No", "Maybe", "Ask again later", "Definitely"];
+        const choices = ["Yes", "No", "Maybe", "Maybe not", "Definitely"];
 
-        function addChoice() {
+        // Initial display of choices
+        displayChoices();
+
+        function addChoices() {
             const input = document.getElementById("customChoice");
-            const newChoice = input.value.trim();
+            const newChoices = input.value.split(',')
+                .map(choice => choice.trim())
+                .filter(choice => choice); // Trim whitespace and filter out empty strings
 
-            if (newChoice) {
-                choices.push(newChoice);
-                input.value = ""; // Clear the input field
-                displayChoices();
-                alert("Choice added: " + newChoice);
-            } else {
-                alert("Please enter a valid choice.");
-            }
-        }
+            // Remove duplicates
+            newChoices.forEach(choice => {
+                if (!choices.includes(choice)) {
+                    choices.push(choice);
+                }
+            });
 
-        function removeChoice(index) {
-            choices.splice(index, 1);
+            input.value = ""; // Clear the input field
             displayChoices();
+            alert("Choices added: " + newChoices.join(', '));
         }
 
         function displayChoices() {
@@ -117,10 +122,17 @@
 
             choices.forEach((choice, index) => {
                 const li = document.createElement("li");
-                li.textContent = choice;
+                
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "checkbox";
+                checkbox.checked = true; // Default all choices to checked
+                li.appendChild(checkbox);
+
+                li.appendChild(document.createTextNode(choice));
 
                 const removeButton = document.createElement("button");
-                removeButton.textContent = "Remove";
+                removeButton.textContent = "X";
                 removeButton.className = "remove";
                 removeButton.onclick = () => removeChoice(index);
 
@@ -129,9 +141,24 @@
             });
         }
 
+        function removeChoice(index) {
+            choices.splice(index, 1);
+            displayChoices();
+        }
+
         function makeDecision() {
-            const randomIndex = Math.floor(Math.random() * choices.length);
-            const result = choices[randomIndex];
+            const selectedChoices = choices.filter((choice, index) => {
+                const checkbox = document.querySelectorAll("input[type='checkbox']")[index];
+                return checkbox.checked; // Include only checked choices
+            });
+
+            if (selectedChoices.length === 0) {
+                document.getElementById("result").innerText = "No choices selected!";
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * selectedChoices.length);
+            const result = selectedChoices[randomIndex];
             document.getElementById("result").innerText = "Decision: " + result;
         }
     </script>
