@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -104,7 +103,7 @@
         }
         .highlight {
             border: 2px solid cyan;
-            animation: highlightAnimation 1s infinite alternate; /* Infinite animation */
+            animation: highlightAnimation 1s forwards; /* Adjusted animation */
         }
         @keyframes highlightAnimation {
             0% { border-color: transparent; transform: scale(1); }
@@ -207,7 +206,7 @@
                 return;
             }
             const decision = selectedChoices[Math.floor(Math.random() * selectedChoices.length)];
-            resultDisplay.innerText = `You decided: ${decision}`;
+            resultDisplay.innerText = `Decided: ${decision}`;
             resultDisplay.style.opacity = 0;
             setTimeout(() => {
                 resultDisplay.style.opacity = 1;
@@ -223,21 +222,26 @@
         }
 
         function highlightChoices(selectedChoices, decision) {
-            choiceList.querySelectorAll('.choice-item').forEach(item => {
-                const label = item.querySelector('label strong');
-                if (selectedChoices.includes(label.innerText.trim())) {
-                    item.classList.add('highlight');
-                } else {
-                    item.classList.remove('highlight');
-                }
-            });
+            let index = 0;
 
-            // Stop the animation on the chosen decision
-            const chosenItem = Array.from(choiceList.children).find(item => item.innerText.includes(decision));
-            if (chosenItem) {
-                chosenItem.classList.remove('highlight');
-                chosenItem.classList.add('highlight');
-            }
+            const interval = setInterval(() => {
+                if (index >= selectedChoices.length) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                const currentChoice = selectedChoices[index];
+                const item = Array.from(choiceList.children).find(item => item.innerText.includes(currentChoice));
+                
+                // Clear previous highlights
+                choiceList.querySelectorAll('.choice-item').forEach(item => item.classList.remove('highlight'));
+
+                if (item) {
+                    item.classList.add('highlight');
+                }
+
+                index++;
+            }, 1000); // Change this value for speed of looping
         }
 
         function showToast(message) {
