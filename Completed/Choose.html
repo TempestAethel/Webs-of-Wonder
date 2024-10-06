@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -70,16 +71,16 @@
         }
         li {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             padding: 5px;
             background-color: #333;
             border-radius: 5px;
             margin-bottom: 5px;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
         }
         li:hover {
             background-color: #444;
+            transform: scale(1.02); /* Slight scale effect on hover */
         }
         .remove {
             background-color: transparent;
@@ -91,6 +92,7 @@
         }
         .checkbox {
             margin-right: 10px;
+            margin-left: 0; /* Remove margin on the left for proper alignment */
         }
         #toast {
             visibility: hidden;
