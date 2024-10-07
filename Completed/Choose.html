@@ -7,21 +7,26 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom, #333, #222);
+            background: linear-gradient(-45deg, #000000, #333333, #444444, #222222);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
             color: #fff;
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
+            height: 100vh;
         }
         #menu {
-            background-color: #444;
+            background-color: rgba(68, 68, 68, 0.9);
             border-radius: 8px;
             padding: 20px;
             width: 300px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
         h1 {
             text-align: center;
+            margin-bottom: 20px;
         }
         input[type="text"] {
             padding: 10px;
@@ -39,9 +44,11 @@
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
             width: 100%;
+            background-color: #555;
+            color: #fff;
         }
         button:hover {
-            background-color: #555;
+            background-color: #666;
             transform: translateY(-2px);
         }
         ul {
@@ -52,7 +59,20 @@
         li {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             margin: 5px 0;
+        }
+        .remove-button {
+            width: 30px;
+            height: 30px;
+            background: #888;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .remove-button:hover {
+            background: #666;
         }
         .highlight {
             border: 2px solid #0f0;
@@ -76,6 +96,17 @@
             border-radius: 5px;
             display: none;
             transition: opacity 0.5s;
+        }
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
     </style>
 </head>
@@ -135,7 +166,7 @@
                 .map(input => input.value);
             if (checkedChoices.length > 0) {
                 const randomChoice = checkedChoices[Math.floor(Math.random() * checkedChoices.length)];
-                decisionResult.textContent = `Decision: ${randomChoice}`;
+                decisionResult.textContent = `Decision: ${randomChoice.charAt(0).toUpperCase() + randomChoice.slice(1)}`; // Capitalize the first letter
                 decisionResult.classList.add('highlight');
                 decisionResult.style.display = 'block';
             } else {
