@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #qrCodePreview {
+            width: 200px;
+            height: 200px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            margin: 20px auto;
+        }
+        #dropArea {
+            border: 2px dashed #aaa;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+</head>
+<body>
+
+<h1>QR Code Generator</h1>
+<input type="text" id="linkInput" placeholder="Enter link here" />
+<button id="generateButton">Generate QR Code</button>
+<div id="qrCodePreview" id="dropArea">Preview</div>
+<a id="downloadLink" style="display:none;">Download QR Code</a>
+
+<div id="dropArea">Drag and drop an image here for background</div>
+
+<script>
+    $(document).ready(function() {
+        $('#generateButton').click(function() {
+            const link = $('#linkInput').val();
+            if (link) {
+                $('#qrCodePreview').empty();
+                $('#qrCodePreview').qrcode({
+                    text: link,
+                    width: 200,
+                    height: 200
+                });
+
+                // Update download link
+                const canvas = $('#qrCodePreview canvas')[0];
+                const dataURL = canvas.toDataURL('image/png');
+                $('#downloadLink').attr('href', dataURL).attr('download', 'qrcode.png').show();
+            }
+        });
+
+        // Drag and drop functionality
+        const dropArea = $('#dropArea');
+
+        dropArea.on('dragover', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            dropArea.addClass('drag-over');
+        });
+
+        dropArea.on('dragleave', function(event) {
+            dropArea.removeClass('drag-over');
+        });
+
+        dropArea.on('drop', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            dropArea.removeClass('drag-over');
+
+            const files = event.originalEvent.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#qrCodePreview').css('background-image', 'url(' + e.target.result + ')');
+                }
+                reader.readAsDataURL(files[0]);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
