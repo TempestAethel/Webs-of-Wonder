@@ -277,17 +277,30 @@
         }
 
         function startTimer() {
-            timer = setInterval(() => {
-                timeLeft--;
-                timerDisplay.innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    resultDisplay.innerText = "You lost! Time's up.";
-                    resultDisplay.classList.remove("hidden");
-                }
-            }, 1000);
-        }
+        clearInterval(timer); // Clear any existing timer to prevent multiple intervals
+        timeLeft = 60; // Reset time to 60 seconds
+        timerDisplay.innerText = timeLeft;
 
+        timer = setInterval(() => {
+        timeLeft--;
+        timerDisplay.innerText = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            resultDisplay.innerText = "You lost! Time's up.";
+            resultDisplay.classList.remove("hidden");
+            }
+        }, 1000); // Set to 1000 ms for 1 second
+    }
+
+// Call startTimer() in your input event listener
+userInput.addEventListener('input', (e) => {
+    // Start timer on first character input
+    if (timeLeft === 60) {
+        startTimer();
+    }
+    // Rest of your input handling logic...
+});
+        
         function randomExplosion() {
             const destroyEndOnly = document.getElementById("destroy-end").checked;
 
@@ -392,12 +405,6 @@
                 }
             }
         }
-
-        userInput.addEventListener('input', (e) => {
-            // Start timer on first character input
-            if (timeLeft === 60) {
-                startTimer();
-            }
 
             const regex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]*$/;
             if (!regex.test(e.target.value)) {
