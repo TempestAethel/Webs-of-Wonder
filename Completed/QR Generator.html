@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,86 +7,73 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
-        #qrCodePreview {
-            width: 200px;
-            height: 200px;
-            border: 1px solid #ccc;
             display: flex;
-            align-items: center;
             justify-content: center;
-            background-size: cover;
-            margin: 20px auto;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
         }
-        #dropArea {
-            border: 2px dashed #aaa;
+        .container {
+            text-align: center;
+            background-color: white;
             padding: 20px;
-            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #qrcode {
+            margin: 20px 0;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
 </head>
 <body>
+    <div class="container">
+        <h1>QR Code Generator</h1>
+        <input type="text" id="urlInput" placeholder="Enter a valid URL" />
+        <div id="qrcode"></div>
+        <button id="downloadBtn" style="display:none;">Download QR Code</button>
+    </div>
 
-<h1>QR Code Generator</h1>
-<input type="text" id="linkInput" placeholder="Enter link here" />
-<button id="generateButton">Generate QR Code</button>
-<div id="qrCodePreview" id="dropArea">Preview</div>
-<a id="downloadLink" style="display:none;">Download QR Code</a>
-
-<div id="dropArea">Drag and drop an image here for background</div>
-
-<script>
-    $(document).ready(function() {
-        $('#generateButton').click(function() {
-            const link = $('#linkInput').val();
-            if (link) {
-                $('#qrCodePreview').empty();
-                $('#qrCodePreview').qrcode({
-                    text: link,
-                    width: 200,
-                    height: 200
-                });
-
-                // Update download link
-                const canvas = $('#qrCodePreview canvas')[0];
-                const dataURL = canvas.toDataURL('image/png');
-                $('#downloadLink').attr('href', dataURL).attr('download', 'qrcode.png').show();
-            }
-        });
-
-        // Drag and drop functionality
-        const dropArea = $('#dropArea');
-
-        dropArea.on('dragover', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            dropArea.addClass('drag-over');
-        });
-
-        dropArea.on('dragleave', function(event) {
-            dropArea.removeClass('drag-over');
-        });
-
-        dropArea.on('drop', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            dropArea.removeClass('drag-over');
-
-            const files = event.originalEvent.dataTransfer.files;
-            if (files.length > 0 && files[0].type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#qrCodePreview').css('background-image', 'url(' + e.target.result + ')');
+    <script>
+        $(document).ready(function() {
+            $('#urlInput').on('input', function() {
+                const url = $(this).val();
+                $('#qrcode').empty();
+                
+                if (url) {
+                    $('#qrcode').qrcode({width: 200, height: 200, text: url});
+                    $('#downloadBtn').show().off('click').on('click', function() {
+                        const canvas = $('#qrcode canvas')[0];
+                        const link = document.createElement('a');
+                        link.download = 'qrcode.png';
+                        link.href = canvas.toDataURL();
+                        link.click();
+                    });
+                } else {
+                    $('#downloadBtn').hide();
                 }
-                reader.readAsDataURL(files[0]);
-            }
+            });
         });
-    });
-</script>
-
+    </script>
 </body>
 </html>
