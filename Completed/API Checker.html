@@ -1,110 +1,114 @@
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Checker</title>
     <style>
-        body, html {
+        body {
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle, rgba(176, 224, 230, 0.2), rgba(18, 18, 18, 1) 70%);
             margin: 0;
             padding: 0;
-            height: 100%;
-            background: radial-gradient(circle, #333 0%, #111 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: Arial, sans-serif;
-            color: #ddd;
+            height: 100vh;
         }
-
         .container {
-            background-color: #222;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
-            max-width: 400px;
             width: 90%;
+            max-width: 600px;
+            background-color: #2c2c2c;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+            padding: 30px;
             text-align: center;
+            border: 2px solid rgba(0, 255, 255, 0.5); /* Dim cyan border */
         }
-
-        h1 {
-            font-size: 24px;
+        h2 {
             margin-bottom: 20px;
+            color: #ffffff;
         }
-
         input[type="text"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #444;
-            border-radius: 5px;
-            background-color: #333;
-            color: #ddd;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-
-        input[type="text"]::placeholder {
-            color: #aaa;
-        }
-
-        button {
-            padding: 10px 20px;
+            padding: 12px;
             border: none;
             border-radius: 5px;
-            background-color: #444;
-            color: #ddd;
-            font-size: 16px;
-            cursor: pointer;
+            margin-bottom: 15px;
+            background-color: #3a3a3a;
+            color: #ffffff;
+            transition: background-color 0.3s;
+            box-sizing: border-box; /* Ensure padding is included in width */
         }
-
-        button:hover {
-            background-color: #555;
+        input[type="text"]:focus {
+            background-color: #4a4a4a;
+            outline: none;
         }
-
-        #preview {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #333;
+        .response {
+            background-color: #3a3a3a;
             border-radius: 5px;
-            border: 1px solid #444;
-            color: #ddd;
-            text-align: left;
-            white-space: pre-wrap;
-            font-family: monospace;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            max-height: 300px;
+            overflow: auto;
+            scrollbar-width: thin; /* For Firefox */
+            -ms-overflow-style: none; /* For Internet Explorer and Edge */
+            margin-top: 20px;
+            color: #ffffff;
+            text-align: left; /* Align text to the left */
+        }
+        .response::-webkit-scrollbar {
+            display: none; /* For Chrome, Safari, and Opera */
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            input[type="text"] {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>API Checker</h1>
-        <input type="text" id="apiUrl" placeholder="Enter API URL">
-        <button onclick="checkAPI()">Check</button>
-        <div id="preview">API response will appear here...</div>
+        <h2>API Checker</h2>
+        <input type="text" id="apiUrl" placeholder="Enter API URL" oninput="startAutoCheck()">
+        <div class="response" id="responseArea">Response will be displayed here.</div>
     </div>
 
     <script>
-        function checkAPI() {
-            const apiUrl = document.getElementById('apiUrl').value;
-            const preview = document.getElementById('preview');
-            
-            if (!apiUrl) {
-                preview.innerHTML = "Please enter a valid API URL.";
+        let intervalId;
+
+        function startAutoCheck() {
+            const url = document.getElementById('apiUrl').value;
+            const responseArea = document.getElementById('responseArea');
+
+            if (intervalId) {
+                clearInterval(intervalId); // Clear previous interval
+            }
+
+            if (!url) {
+                responseArea.textContent = 'Please enter an API URL.';
                 return;
             }
 
-            preview.innerHTML = "Checking API...";
-            
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    preview.innerHTML = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    preview.innerHTML = "Error fetching API: " + error;
-                });
+            responseArea.textContent = 'Loading...';
+
+            // Automatically check every 5 seconds
+            intervalId = setInterval(async () => {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    responseArea.textContent = JSON.stringify(data, null, 2);
+                    responseArea.scrollTop = responseArea.scrollHeight; // Auto-scroll
+                } catch (error) {
+                    responseArea.textContent = 'Error: ' + error.message;
+                }
+            }, 10000); // 10000 ms = 10 seconds
         }
     </script>
-
 </body>
 </html>
