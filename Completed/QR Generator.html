@@ -3,93 +3,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            background: linear-gradient(to right, #1a1a1a, #4d4d4d);
+            color: #ffffff;
+            font-family: Arial, sans-serif;
             margin: 0;
-            background-color: #121212;
-            color: white;
         }
         .container {
             text-align: center;
-            background-color: #1e1e1e;
-            padding: 20px;
+            background-color: #121212;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 500px;
         }
         input[type="text"] {
-            width: 100%; /* Make the input full width */
             padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #444;
+            width: 80%;
+            max-width: 400px;
+            border: none;
             border-radius: 5px;
-            background-color: #2c2c2c;
-            color: white;
+            margin-bottom: 20px;
+            background-color: #1e1e1e;
+            color: #ffffff;
         }
         button {
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
-            background-color: #28a745;
-            color: white;
+            background-color: #6200ea;
+            color: #ffffff;
             cursor: pointer;
             display: none; /* Initially hidden */
-            margin-top: 20px; /* Add margin for spacing */
+            margin-top: 20px;
         }
         button:hover {
-            background-color: #218838;
-        }
-        #qrcode-container {
-            margin: 20px 0;
-            padding: 10px; /* Padding for the grey border */
-            border: 4px solid #888; /* Grey border */
-            display: none; /* Hide initially */
-            border-radius: 8px; /* Rounded corners for the grey border */
+            background-color: #3700b3;
         }
         #qrcode {
-            border: 4px solid #fff; /* White border around the QR code */
-            display: inline-block; /* Ensure the border wraps around the QR code */
+            margin-top: 20px;
+            display: none; /* Initially hidden */
+            padding: 10px; /* Padding for the white border effect */
+            background-color: white; /* Background color for the border effect */
+            border-radius: 10px; /* Rounded corners */
+        }
+        canvas {
+            border: 5px solid white; /* White border around the QR code */
+            border-radius: 5px; /* Rounded corners for the canvas */
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>QR Code Generator</h1>
-        <input type="text" id="urlInput" placeholder="Enter a valid URL" />
-        <div id="qrcode-container">
-            <div id="qrcode"></div>
-        </div>
-        <button id="downloadBtn">Download QR Code</button>
-    </div>
 
-    <script>
-        $(document).ready(function() {
-            $('#urlInput').on('input', function() {
-                const url = $(this).val();
-                $('#qrcode').empty();
-                
-                if (url) {
-                    $('#qrcode-container').show(); // Show QR code container
-                    $('#qrcode-container').qrcode({width: 200, height: 200, text: url});
-                    $('#downloadBtn').show().off('click').on('click', function() {
-                        const canvas = $('#qrcode canvas')[0];
-                        const link = document.createElement('a');
-                        link.download = 'qrcode.png';
-                        link.href = canvas.toDataURL();
-                        link.click();
-                    });
-                } else {
-                    $('#qrcode-container').hide(); // Hide QR code container
-                    $('#downloadBtn').hide(); // Hide download button
-                }
-            });
+<div class="container">
+    <h1>QR Code Generator</h1>
+    <input type="text" id="urlInput" placeholder="Enter a valid URL" />
+    <div id="qrcode"></div>
+    <button id="downloadBtn">Download QR Code</button>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#urlInput').on('input', function() {
+            const url = $(this).val();
+            const $qrcode = $('#qrcode');
+            const $downloadBtn = $('#downloadBtn');
+
+            if (url) {
+                $qrcode.empty().qrcode(url);
+                $qrcode.show();
+                $downloadBtn.show();
+            } else {
+                $qrcode.hide();
+                $downloadBtn.hide();
+            }
         });
-    </script>
+
+        $('#downloadBtn').on('click', function() {
+            const canvas = $('#qrcode canvas')[0];
+            const link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    });
+</script>
+
 </body>
 </html>
