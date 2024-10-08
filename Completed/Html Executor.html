@@ -12,20 +12,26 @@
             font-family: Arial, sans-serif;
         }
         #input-area {
-            width: 50%;
+            flex: 1;
             padding: 20px;
-            border-right: 1px solid #ccc;
             overflow: auto;
             box-sizing: border-box;
             color: #ecf0f1;
             background-color: rgba(44, 62, 80, 0.85);
+            transition: width 0.2s;
         }
         #output-area {
-            width: 50%;
+            flex: 1;
             padding: 20px;
             overflow: auto;
             box-sizing: border-box;
             background-color: rgba(52, 73, 94, 0.85);
+            transition: width 0.2s;
+        }
+        #separator {
+            width: 10px;
+            background-color: #ccc;
+            cursor: ew-resize;
         }
         textarea {
             width: 100%;
@@ -54,6 +60,7 @@
 <div id="input-area">
     <textarea id="html-input" placeholder="Enter your HTML code here..."></textarea>
 </div>
+<div id="separator"></div>
 <div id="output-area">
     <iframe id="output"></iframe>
 </div>
@@ -61,6 +68,8 @@
 <script>
     const htmlInput = document.getElementById('html-input');
     const outputFrame = document.getElementById('output');
+    const separator = document.getElementById('separator');
+    let isDragging = false;
 
     // Initialize the iframe with a gray background
     const outputDoc = outputFrame.contentDocument || outputFrame.contentWindow.document;
@@ -74,6 +83,25 @@
         outputDoc.open();
         outputDoc.write(content);
         outputDoc.close();
+    });
+
+    separator.addEventListener('mousedown', (e) => {
+        isDragging = true;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const leftWidth = e.clientX; // Get the mouse position
+            const bodyWidth = document.body.clientWidth;
+
+            // Set the new width of input and output areas
+            document.getElementById('input-area').style.width = `${leftWidth}px`;
+            document.getElementById('output-area').style.width = `${bodyWidth - leftWidth - separator.clientWidth}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
     });
 </script>
 
