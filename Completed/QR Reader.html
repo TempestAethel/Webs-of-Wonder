@@ -1,163 +1,120 @@
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Reader</title>
+    <title>QR Code Scanner / Reader</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
-            align-items: center;
+            margin: 0;
+            padding: 0;
             height: 100vh;
-            background-color: #f4f4f4;
-        }
-        .container {
+            box-sizing: border-box;
             text-align: center;
-            background: white;
-            padding: 20px;
+            background: rgb(30, 30, 30);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 5px;
+        }
+
+        .container h1 {
+            color: #ffffff;
+        }
+
+        .section {
+            background-color: #2c2c2c;
+            padding: 50px 30px;
+            border: 1.5px solid #444;
+            border-radius: 0.25em;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        #my-qr-reader {
+            padding: 20px !important;
+            border: 1.5px solid #444 !important;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #1f1f1f;
         }
-        .qr-input {
-            margin-bottom: 20px;
-        }
-        #dropArea {
-            width: 300px;
-            height: 200px;
-            border: 2px dashed #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 10px auto;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-        .result {
-            margin: 20px 0;
-        }
-        .hidden {
+
+        #my-qr-reader img[alt="Info icon"] {
             display: none;
         }
-        #dropArea.drag-over {
-            border-color: #007BFF;
-            background-color: #e9f7fe;
+
+        #my-qr-reader img[alt="Camera based scan"] {
+            width: 100px !important;
+            height: 100px !important;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: 1px solid #444;
+            outline: none;
+            border-radius: 0.25em;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            background-color: #007bff;
+            transition: 0.3s background-color;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #html5-qrcode-anchor-scan-type-change {
+            text-decoration: none !important;
+            color: #1d9bf0;
+        }
+
+        video {
+            width: 100% !important;
+            border: 1px solid #444 !important;
+            border-radius: 0.25em;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <h1>QR Code Reader</h1>
-        <div class="qr-input" id="qrInput">
-            <input type="file" id="fileInput" accept="image/*" hidden>
-            <button id="uploadBtn">Upload Image</button>
-            <button id="cameraBtn">Use Camera</button>
-            <div id="dropArea">Drag & Drop QR Code Image Here</div>
+        <h1>Scan QR Codes</h1>
+        <div class="section">
+            <div id="my-qr-reader"></div>
         </div>
-        <div id="result" class="result"></div>
-        <button id="openLink" class="hidden">Open Link</button>
     </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
-        document.getElementById('uploadBtn').addEventListener('click', () => {
-            document.getElementById('fileInput').click();
-        });
-
-        document.getElementById('fileInput').addEventListener('change', handleFiles);
-        document.getElementById('cameraBtn').addEventListener('click', useCamera);
-        document.getElementById('dropArea').addEventListener('dragover', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            e.currentTarget.classList.add('drag-over');
-        });
-        document.getElementById('dropArea').addEventListener('dragleave', (e) => {
-            e.currentTarget.classList.remove('drag-over');
-        });
-        document.getElementById('dropArea').addEventListener('drop', handleDrop);
-
-        function handleFiles(event) {
-            const file = event.target.files[0];
-            if (file) {
-                decodeQR(file);
-            }
-        }
-
-        function handleDrop(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            event.currentTarget.classList.remove('drag-over');
-            const file = event.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) {
-                decodeQR(file);
+        function domReady(fn) {
+            if (
+                document.readyState === "complete" ||
+                document.readyState === "interactive"
+            ) {
+                setTimeout(fn, 1000);
             } else {
-                alert("Please drop a valid image file.");
+                document.addEventListener("DOMContentLoaded", fn);
             }
         }
 
-        function useCamera() {
-            const video = document.createElement('video');
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            document.body.appendChild(video);
-            
-            navigator.mediaDevices.enumerateDevices().then(devices => {
-                const videoDevices = devices.filter(device => device.kind === 'videoinput');
-                const constraints = {
-                    video: {
-                        facingMode: videoDevices.length > 1 ? { exact: 'environment' } : true // Use back camera if available
-                    }
-                };
+        domReady(function () {
+            // If found your QR code
+            function onScanSuccess(decodeText, decodeResult) {
+                alert("Your QR code is: " + decodeText);
+            }
 
-                navigator.mediaDevices.getUserMedia(constraints)
-                    .then(stream => {
-                        video.srcObject = stream;
-                        video.play();
-
-                        const checkQRCode = () => {
-                            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                            const code = jsQR(imageData.data, canvas.width, canvas.height);
-                            if (code) {
-                                displayResult(code.data);
-                                video.pause();
-                                stream.getTracks().forEach(track => track.stop());
-                                document.body.removeChild(video);
-                            }
-                        };
-
-                        canvas.width = 640; // Set canvas width
-                        canvas.height = 480; // Set canvas height
-                        setInterval(checkQRCode, 1000);
-                    });
-            });
-        }
-
-        function decodeQR(file) {
-            const img = new Image();
-            img.src = URL.createObjectURL(file);
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                context.drawImage(img, 0, 0);
-                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                const code = jsQR(imageData.data, canvas.width, canvas.height);
-                if (code) {
-                    displayResult(code.data);
-                } else {
-                    alert("No QR code found.");
-                }
-            };
-        }
-
-        function displayResult(data) {
-            const resultDiv = document.getElementById('result');
-            const openLinkBtn = document.getElementById('openLink');
-            resultDiv.innerText = data;
-            openLinkBtn.href = data; // Assuming it's a URL
-            openLinkBtn.classList.remove('hidden');
-        }
+            let htmlscanner = new Html5QrcodeScanner(
+                "my-qr-reader",
+                { fps: 10, qrbox: 250 }
+            );
+            htmlscanner.render(onScanSuccess);
+        });
     </script>
 </body>
+
 </html>
