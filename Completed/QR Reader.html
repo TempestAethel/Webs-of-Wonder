@@ -1,1 +1,143 @@
- 
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Reader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .qr-input {
+            margin-bottom: 20px;
+        }
+        #dropArea {
+            width: 300px;
+            height: 200px;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto;
+        }
+        .result {
+            margin: 20px 0;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QR Code Reader</h1>
+        <div class="qr-input" id="qrInput">
+            <input type="file" id="fileInput" accept="image/*" hidden>
+            <button id="uploadBtn">Upload Image</button>
+            <button id="cameraBtn">Use Camera</button>
+            <div id="dropArea">Drag & Drop QR Code Image Here</div>
+        </div>
+        <div id="result" class="result"></div>
+        <button id="openLink" class="hidden">Open Link</button>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
+    <script>
+        document.getElementById('uploadBtn').addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
+        document.getElementById('fileInput').addEventListener('change', handleFiles);
+        document.getElementById('cameraBtn').addEventListener('click', useCamera);
+        document.getElementById('dropArea').addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+        document.getElementById('dropArea').addEventListener('drop', handleDrop);
+
+        function handleFiles(event) {
+            const file = event.target.files[0];
+            if (file) {
+                decodeQR(file);
+            }
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            if (file) {
+                decodeQR(file);
+            }
+        }
+
+        function useCamera() {
+            const video = document.createElement('video');
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            document.body.appendChild(video);
+            
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.play();
+
+                    const checkQRCode = () => {
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                        const code = jsQR(imageData.data, canvas.width, canvas.height);
+                        if (code) {
+                            displayResult(code.data);
+                            video.pause();
+                            stream.getTracks().forEach(track => track.stop());
+                            document.body.removeChild(video);
+                        }
+                    };
+
+                    setInterval(checkQRCode, 1000);
+                });
+        }
+
+        function decodeQR(file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    context.drawImage(img, 0, 0);
+                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, canvas.width, canvas.height);
+                    if (code) {
+                        displayResult(code.data);
+                    } else {
+                        alert("No QR code found.");
+                    }
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function displayResult(data) {
+            const resultDiv = document.getElementById('result');
+            const openLinkBtn = document.getElementById('openLink');
+            resultDiv.innerText = data;
+            openLinkBtn.href = data; // Assuming it's a URL
+            openLinkBtn.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
