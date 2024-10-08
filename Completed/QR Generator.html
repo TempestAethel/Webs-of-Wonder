@@ -22,7 +22,7 @@
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
         }
         input[type="text"] {
-            width: 80%;
+            width: 100%; /* Make the input full width */
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #444;
@@ -37,13 +37,20 @@
             background-color: #28a745;
             color: white;
             cursor: pointer;
+            display: none; /* Initially hidden */
         }
         button:hover {
             background-color: #218838;
         }
-        #qrcode {
+        #qrcode-container {
             margin: 20px 0;
-            border: 4px solid #fff; /* Border around the QR code */
+            padding: 10px; /* Padding for the grey border */
+            border: 4px solid #888; /* Grey border */
+            display: inline-block; /* Ensure the borders wrap around the QR code */
+            border-radius: 8px; /* Rounded corners for the grey border */
+        }
+        #qrcode {
+            border: 4px solid #fff; /* White border around the QR code */
             display: inline-block; /* Ensure the border wraps around the QR code */
         }
     </style>
@@ -54,8 +61,10 @@
     <div class="container">
         <h1>QR Code Generator</h1>
         <input type="text" id="urlInput" placeholder="Enter a valid URL" />
-        <div id="qrcode"></div>
-        <button id="downloadBtn" style="display:none;">Download QR Code</button>
+        <div id="qrcode-container">
+            <div id="qrcode"></div>
+        </div>
+        <button id="downloadBtn">Download QR Code</button>
     </div>
 
     <script>
