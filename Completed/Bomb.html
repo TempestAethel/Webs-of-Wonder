@@ -1,127 +1,125 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explosive Sentence Game</title>
     <style>
-body {
-    background-color: #121212;
-    color: #E0E0E0;
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-}
+        body {
+            background-color: #121212;
+            color: #E0E0E0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
 
-h1 {
-    margin-bottom: 20px;
-    text-align: center;
-    font-size: 28px; /* Adjusted size for better visibility */
-    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
-}
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 28px;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+        }
 
-input {
-    padding: 10px;
-    font-size: 18px;
-    border: none;
-    border-radius: 5px;
-    width: 100%;
-    max-width: 300px;
-    outline: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); /* Added shadow */
-    transition: background-color 0.3s;
-}
+        input {
+            padding: 10px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s;
+        }
 
-input:hover {
-    background-color: rgba(255, 255, 255, 0.1); /* Subtle hover effect */
-}
+        input:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
 
-.container {
-    position: relative;
-    margin-bottom: 20px;
-    display: flex; /* Use flexbox layout */
-    flex-direction: column; /* Stack elements vertically */
-    gap: 25px; /* Add space between each element */
-}
+        .container {
+            position: relative;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px; /* Reduced space between elements */
+        }
 
-.explosion {
-    display: none;
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: radial-gradient(circle, yellow, transparent);
-    border-radius: 50%;
-    animation: explode 0.5s forwards;
-}
+        .explosion {
+            display: none;
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, yellow, transparent);
+            border-radius: 50%;
+            animation: explode 0.5s forwards;
+        }
 
-@keyframes explode {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(4);
-        opacity: 0;
-    }
-}
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
 
-.difficulty {
-    margin-bottom: 0; /* Remove bottom margin to avoid double spacing */
-}
+        .difficulty {
+            margin-bottom: 0;
+        }
 
-.hidden {
-    display: none;
-}
+        .hidden {
+            display: none;
+        }
 
-.power-up {
-    position: absolute;
-    color: cyan;
-    font-size: 36px; /* Increased size */
-    animation: fall 5s linear forwards;
-    z-index: -1; /* Ensure it's behind other elements */
-}
+        .power-up {
+            position: absolute;
+            color: cyan;
+            font-size: 36px;
+            animation: fall 5s linear forwards;
+            z-index: -1;
+        }
 
-@keyframes fall {
-    0% { top: -50px; }
-    100% { top: 100vh; }
-}
+        @keyframes fall {
+            0% { top: -50px; }
+            100% { top: 100vh; }
+        }
 
-.badge {
-    display: inline-block;
-    margin: 5px;
-    padding: 5px 10px;
-    background: teal;
-    border-radius: 3px;
-    color: white;
-    transition: transform 0.2s;
-}
+        .badge {
+            display: inline-block;
+            margin: 5px;
+            padding: 5px 10px;
+            background: teal;
+            border-radius: 3px;
+            color: white;
+            transition: transform 0.2s;
+        }
 
-.badge:hover {
-    transform: scale(1.05); /* Slight zoom effect on hover */
-}
+        .badge:hover {
+            transform: scale(1.05);
+        }
 
-#score {
-    margin: 20px;
-    font-size: 24px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-}
+        #score {
+            margin: 20px;
+            font-size: 24px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
 
-@media (max-width: 600px) {
-    input {
-        font-size: 16px;
-    }
-    h1 {
-        font-size: 20px;
-    }
-}
-
+        @media (max-width: 600px) {
+            input {
+                font-size: 16px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -131,12 +129,11 @@ input:hover {
     <div class="difficulty">
         <label for="difficulty">Select Difficulty:</label>
         <select id="difficulty">
-            <option value="2000">Very Easy (2s)</option>
-            <option value="1500">Easy (1.5s)</option>
-            <option value="1000">Medium (1s)</option>
-            <option value="750">Hard (0.75s)</option>
-            <option value="500">Very Hard (0.5s)</option>
-            <option value="250">Extreme (0.25s)</option>
+            <option value="1000">1 second</option>
+            <option value="2000">2 seconds</option>
+            <option value="5000" selected>5 seconds</option>
+            <option value="8000">8 seconds</option>
+            <option value="10000">10 seconds</option>
         </select>
     </div>
     <label>
@@ -146,7 +143,7 @@ input:hover {
         <input type="text" id="user-input" aria-label="Input your sentence here">
         <div id="explosion" class="explosion"></div>
     </div>
-    <p id="timer">Time left: <span id="time-left">30</span> seconds</p>
+    <p id="timer">Time left: <span id="time-left">60</span> seconds</p>
     <p id="result" class="hidden"></p>
     <button id="download-button" class="hidden">Download Achievements</button>
 
@@ -171,7 +168,7 @@ input:hover {
         const resultDisplay = document.getElementById("result");
         const downloadButton = document.getElementById("download-button");
         let timer;
-        let timeLeft = 30;
+        let timeLeft = 60; // Set timer to 60 seconds
         let score = 0;
         let powerUpActive = false;
         let powerUpType = "";
@@ -306,6 +303,11 @@ input:hover {
         }
 
         userInput.addEventListener('input', (e) => {
+            // Start timer on first character input
+            if (timeLeft === 60) {
+                startTimer();
+            }
+
             const regex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]*$/;
             if (!regex.test(e.target.value)) {
                 e.target.value = e.target.value.slice(0, -1);
@@ -318,7 +320,7 @@ input:hover {
 
         document.getElementById("difficulty").addEventListener('change', (e) => {
             clearInterval(timer);
-            timeLeft = 30;
+            timeLeft = 60; // Reset timer to 60 seconds
             timerDisplay.innerText = timeLeft;
             const interval = parseInt(e.target.value);
             setInterval(randomExplosion, interval);
@@ -332,8 +334,7 @@ input:hover {
 
         // Initialize game
         randomSentence();
-        startTimer();
-        setInterval(randomExplosion, 1500); // Default interval for the first run
+        setInterval(randomExplosion, 5000); // Default interval for the first run
 
         // Download achievements as an image
         downloadButton.onclick = function() {
