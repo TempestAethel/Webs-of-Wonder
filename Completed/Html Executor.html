@@ -10,28 +10,27 @@
             margin: 0;
             background: linear-gradient(135deg, #2c3e50, #34495e);
             font-family: Arial, sans-serif;
+            position: relative;
         }
         #input-area {
-            flex: 1;
+            max-width: 50%;
+            width: 50%;
             padding: 20px;
-            overflow: auto;
+            border-right: 1px solid #ccc;
+            overflow: hidden;
             box-sizing: border-box;
             color: #ecf0f1;
             background-color: rgba(44, 62, 80, 0.85);
-            transition: width 0.2s;
+            transition: max-width 0.5s ease, opacity 0.5s ease;
+            opacity: 1;
         }
         #output-area {
-            flex: 1;
+            width: 50%;
             padding: 20px;
             overflow: auto;
             box-sizing: border-box;
             background-color: rgba(52, 73, 94, 0.85);
-            transition: width 0.2s;
-        }
-        #separator {
-            width: 10px;
-            background-color: #ccc;
-            cursor: ew-resize;
+            transition: width 0.5s ease;
         }
         textarea {
             width: 100%;
@@ -53,6 +52,17 @@
             height: 100%;
             border: none;
         }
+        #toggle-button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -60,17 +70,18 @@
 <div id="input-area">
     <textarea id="html-input" placeholder="Enter your HTML code here..."></textarea>
 </div>
-<div id="separator"></div>
 <div id="output-area">
     <iframe id="output"></iframe>
 </div>
+<button id="toggle-button">Toggle Code Box</button>
 
 <script>
     const htmlInput = document.getElementById('html-input');
     const outputFrame = document.getElementById('output');
-    const separator = document.getElementById('separator');
-    let isDragging = false;
-
+    const toggleButton = document.getElementById('toggle-button');
+    const inputArea = document.getElementById('input-area');
+    const outputArea = document.getElementById('output-area');
+    
     // Initialize the iframe with a gray background
     const outputDoc = outputFrame.contentDocument || outputFrame.contentWindow.document;
     outputDoc.open();
@@ -85,23 +96,16 @@
         outputDoc.close();
     });
 
-    separator.addEventListener('mousedown', (e) => {
-        isDragging = true;
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            const leftWidth = e.clientX; // Get the mouse position
-            const bodyWidth = document.body.clientWidth;
-
-            // Set the new width of input and output areas
-            document.getElementById('input-area').style.width = `${leftWidth}px`;
-            document.getElementById('output-area').style.width = `${bodyWidth - leftWidth - separator.clientWidth}px`;
+    toggleButton.addEventListener('click', () => {
+        if (inputArea.style.maxWidth === '0px' || inputArea.style.maxWidth === '') {
+            inputArea.style.maxWidth = '50%';
+            inputArea.style.opacity = '1';
+            outputArea.style.width = '50%';
+        } else {
+            inputArea.style.maxWidth = '0px';
+            inputArea.style.opacity = '0';
+            outputArea.style.width = '100%';
         }
-    });
-
-    document.addEventListener('mouseup', () => {
-        isDragging = false;
     });
 </script>
 
