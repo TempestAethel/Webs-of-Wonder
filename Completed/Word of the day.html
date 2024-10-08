@@ -1,8 +1,9 @@
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Word of the Day</title>
+  <title>Word of the Day with Meaning</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -16,14 +17,19 @@
     .word-container {
       margin-bottom: 20px;
     }
+    .meaning {
+      color: #555;
+    }
   </style>
 </head>
 <body>
   <h1>Word of the Day</h1>
   <div id="word-of-the-day" class="word-container">Loading...</div>
+  <div id="word-of-the-day-meaning" class="meaning"></div>
   
   <h2>Random Word</h2>
   <div id="random-word" class="word-container">Loading...</div>
+  <div id="random-word-meaning" class="meaning"></div>
 
   <script>
     async function fetchWordOfTheDay() {
@@ -36,6 +42,7 @@
         if (wordOfTheDayMatch) {
           const wordOfTheDay = wordOfTheDayMatch[2];
           document.getElementById('word-of-the-day').innerText = wordOfTheDay;
+          fetchWordMeaning(wordOfTheDay, 'word-of-the-day-meaning');
         } else {
           document.getElementById('word-of-the-day').innerText = 'Word not found';
         }
@@ -54,11 +61,28 @@
         if (randomWordMatch) {
           const randomWord = randomWordMatch[1];
           document.getElementById('random-word').innerText = randomWord;
+          fetchWordMeaning(randomWord, 'random-word-meaning');
         } else {
           document.getElementById('random-word').innerText = 'Word not found';
         }
       } catch (error) {
         document.getElementById('random-word').innerText = 'Failed to load random word';
+      }
+    }
+
+    async function fetchWordMeaning(word, elementId) {
+      try {
+        const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        const data = await response.json();
+        
+        if (data && data[0] && data[0].meanings && data[0].meanings.length > 0) {
+          const meanings = data[0].meanings[0].definitions[0].definition;
+          document.getElementById(elementId).innerText = `Meaning: ${meanings}`;
+        } else {
+          document.getElementById(elementId).innerText = 'Meaning not found';
+        }
+      } catch (error) {
+        document.getElementById(elementId).innerText = 'Failed to load meaning';
       }
     }
 
