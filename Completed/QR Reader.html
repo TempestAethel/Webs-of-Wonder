@@ -1,6 +1,4 @@
-<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -79,6 +77,11 @@
             border: 1px solid #444 !important;
             border-radius: 0.25em;
         }
+
+        .result {
+            margin-top: 20px;
+            color: #ffffff;
+        }
     </style>
 </head>
 
@@ -87,6 +90,8 @@
         <h1>Scan QR Codes</h1>
         <div class="section">
             <div id="my-qr-reader"></div>
+            <div class="result" id="result"></div>
+            <button id="copy-button" style="display: none;">Copy URL</button>
         </div>
     </div>
     <script src="https://unpkg.com/html5-qrcode"></script>
@@ -104,8 +109,23 @@
 
         domReady(function () {
             // If found your QR code
-            function onScanSuccess(decodeText, decodeResult) {
-                alert("Your QR code is: " + decodeText);
+            function onScanSuccess(decodeText) {
+                // Display the decoded URL
+                const resultDiv = document.getElementById('result');
+                resultDiv.textContent = "Decoded URL: " + decodeText;
+
+                // Show the copy button
+                const copyButton = document.getElementById('copy-button');
+                copyButton.style.display = 'inline-block';
+
+                // Copy to clipboard function
+                copyButton.onclick = function () {
+                    navigator.clipboard.writeText(decodeText).then(() => {
+                        alert("URL copied to clipboard!");
+                    }, (err) => {
+                        alert("Failed to copy: " + err);
+                    });
+                };
             }
 
             let htmlscanner = new Html5QrcodeScanner(
@@ -116,5 +136,4 @@
         });
     </script>
 </body>
-
 </html>
