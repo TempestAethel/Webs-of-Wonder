@@ -112,7 +112,8 @@
             function onScanSuccess(decodeText) {
                 // Display the decoded URL
                 const resultDiv = document.getElementById('result');
-                resultDiv.textContent = "Decoded URL: " + decodeText;
+                resultDiv.textContent = 'Decoded URL: ' + decodeText + '<br><a href="' + decodeText + '" target="_blank">' + decodeText + '</a>';
+
 
                 // Show the copy button
                 const copyButton = document.getElementById('copy-button');
