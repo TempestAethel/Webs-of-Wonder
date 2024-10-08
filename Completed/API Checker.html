@@ -5,15 +5,31 @@
     <title>API Checker</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: radial-gradient(circle, rgba(176, 224, 230, 0.2), rgba(18, 18, 18, 1) 70%);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle, rgba(176, 224, 230, 0.2), rgba(0, 0, 0, 1) 70%);
+    animation: gradient-animation 5s infinite ease-in-out;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-size: 100%;
+    }
+    50% {
+        background-size: 200%;
+    }
+    100% {
+        background-size: 100%;
+    }
+}
+
+
+
         .container {
             width: 90%;
             max-width: 600px;
