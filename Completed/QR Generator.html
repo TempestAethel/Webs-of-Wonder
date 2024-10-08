@@ -38,6 +38,7 @@
             color: white;
             cursor: pointer;
             display: none; /* Initially hidden */
+            margin-top: 20px; /* Add margin for spacing */
         }
         button:hover {
             background-color: #218838;
@@ -46,7 +47,7 @@
             margin: 20px 0;
             padding: 10px; /* Padding for the grey border */
             border: 4px solid #888; /* Grey border */
-            display: inline-block; /* Ensure the borders wrap around the QR code */
+            display: none; /* Hide initially */
             border-radius: 8px; /* Rounded corners for the grey border */
         }
         #qrcode {
@@ -74,7 +75,8 @@
                 $('#qrcode').empty();
                 
                 if (url) {
-                    $('#qrcode').qrcode({width: 200, height: 200, text: url});
+                    $('#qrcode-container').show(); // Show QR code container
+                    $('#qrcode-container').qrcode({width: 200, height: 200, text: url});
                     $('#downloadBtn').show().off('click').on('click', function() {
                         const canvas = $('#qrcode canvas')[0];
                         const link = document.createElement('a');
@@ -83,7 +85,8 @@
                         link.click();
                     });
                 } else {
-                    $('#downloadBtn').hide();
+                    $('#qrcode-container').hide(); // Hide QR code container
+                    $('#downloadBtn').hide(); // Hide download button
                 }
             });
         });
