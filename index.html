@@ -7,7 +7,7 @@
         body {
             background-color: #121212;
             color: #ffffff;
-            font-family: Arial, sans-serif;
+            font-family: 'Noricon', sans-serif; /* Changed to match the previous theme */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,21 +24,24 @@
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
+            color: #00bcd4; /* Cyan color */
+            text-shadow: 0 0 10px #00bcd4; /* Text shadow for title */
         }
         a {
             display: inline-block;
             margin: 10px 0;
             padding: 15px 25px;
             font-size: 1.2em;
-            color: #ffffff;
-            background-color: #6200ea;
+            color: #e0e0e0; /* Light gray for better contrast */
+            background-color: #6200ea; /* Keeping the original purple background */
             border-radius: 5px;
             text-decoration: none;
             transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
         a:hover {
-            background-color: #3700b3;
+            background-color: #00bcd4; /* Change to cyan on hover */
+            color: #121212; /* Dark text on hover */
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
@@ -59,7 +62,6 @@
         <a href="Completed/AnotherPage.html">Go to Another Page</a>
         <a href="Completed/YetAnotherPage.html">Go to Yet Another Page</a>
         -->
-
     </div>
 </body>
 </html>
