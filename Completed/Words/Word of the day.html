@@ -30,9 +30,10 @@
             background-image: repeating-linear-gradient(
                 45deg,
                 #404040,
-                #404040 10px,
-                #808080 10px,
-                #808080 20px
+        #404040 10px,
+        #808080 10px,
+        #808080 20px
+
             );
         }
 
@@ -119,27 +120,12 @@
     </div>
 
     <script>
-        let words = []; // Initialize an empty array for words
+        
         let wordDataCache = [];
-
-        // Fetch words from Words.txt and extract the array
-        async function fetchWords() {
-            try {
-                const response = await fetch('Words.txt');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const text = await response.text();
-                // Use eval to extract the words array
-                eval(text); // This will define `words` in the current scope
-            } catch (error) {
-                console.error('Error fetching words:', error);
-            }
-        }
 
         async function fetchWordDefinition(word) {
             try {
-                const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+                const response = await fetch(https://api.dictionaryapi.dev/api/v2/entries/en/${word});
                 if (!response.ok) {
                     return null;
                 }
@@ -164,12 +150,12 @@
             const { word, phonetic, meanings } = data;
 
             wordElement.textContent = word;
-            let infoHtml = `<p><strong>Phonetic:</strong> ${phonetic || 'N/A'}</p>`;
+            let infoHtml = <p><strong>Phonetic:</strong> ${phonetic || 'N/A'}</p>;
 
             meanings.forEach(meaning => {
-                infoHtml += `<p><strong>As a ${meaning.partOfSpeech}:</strong></p>`;
+                infoHtml += <p><strong>As a ${meaning.partOfSpeech}:</strong></p>;
                 meaning.definitions.forEach(def => {
-                    infoHtml += `<p>${def.definition}${def.example ? ' E.g., ' + def.example : ''}</p>`;
+                    infoHtml += <p>${def.definition}${def.example ? ' E.g., ' + def.example : ''}</p>;
                 });
             });
 
@@ -184,11 +170,10 @@
             }
         }
 
-        window.onload = async () => {
-            await fetchWords(); // Fetch the words first
-            await prefetchWords(); // Then prefetch the word data
-            displayRandomWord();   // Finally, display a random word
-        };
+       window.onload = async () => {
+    await prefetchWords(); // Prefetch the word data
+    displayRandomWord();   // Call random word function after prefetching
+};
     </script>
 </body>
 </html>
