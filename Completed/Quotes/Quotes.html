@@ -101,30 +101,32 @@
     </div>
 
 <script>
-    let quotes = [];
-
-    async function fetchQuotes() {
-        try {
-            const response = await fetch('quotes.json');
-            quotes = await response.json();
-            displayRandomQuote(); // Display a random quote after fetching
-        } catch (error) {
-            console.error('Error fetching quotes:', error);
-            document.getElementById('quote').innerText = 'Error fetching quotes';
-            document.getElementById('author').innerText = 'Please try again later.';
-        }
+   async function fetchQuotes() {
+    const response = await fetch('quotes.json');
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
     }
+    return await response.json();
+}
 
-    function displayRandomQuote() {
-        if (quotes.length === 0) return;
+async function displayRandomQuote() {
+    try {
+        const quotes = await fetchQuotes();
         const randomIndex = Math.floor(Math.random() * quotes.length);
-        const selectedQuote = quotes[randomIndex];
-        document.getElementById('quote').innerText = selectedQuote.quote;
-        document.getElementById('author').innerText = `— ${selectedQuote.author}`;
+        const randomQuote = quotes[randomIndex];
+        
+        // Update the quote and author in the DOM
+        document.getElementById('quote').textContent = `"${randomQuote.quote}"`;
+        document.getElementById('author').textContent = `- ${randomQuote.author}`;
+    } catch (error) {
+        console.error('Error fetching quotes:', error);
+        document.getElementById('quote').textContent = "Error loading quote.";
+        document.getElementById('author').textContent = "";
     }
+}
 
-    // Fetch quotes when the page loads
-    window.onload = fetchQuotes;
+// Display a random quote when the page loads
+window.onload = displayRandomQuote;
 </script>
 
 </body>
