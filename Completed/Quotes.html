@@ -6,137 +6,140 @@
     <title>Quotes</title>
     <style>
         /* Global styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(to right, #2c3e50, #34495e);
-            color: #ecf0f1;
-            line-height: 1.8;
-            padding: 40px 20px;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            overflow-x: hidden;
-        }
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #2c3e50, #34495e);
+    color: #ecf0f1;
+    line-height: 1.8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Make body full height */
+    margin: 0;
+}
 
-        h1 {
-            font-size: 3em;
-            margin-bottom: 40px;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-            color: #ecf0f1;
-            text-align: center;
-        }
+h1 {
+    font-size: 3em;
+    margin-bottom: 20px; /* Adjust margin for better spacing */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    color: #ecf0f1;
+    text-align: center;
+}
 
-        /* Quote container styles */
-        .quote-container {
-            background: linear-gradient(to right, #1e2a38, #2c3e50);
-            padding: 30px;
-            margin: 20px auto;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            width: 90%;
-            max-width: 700px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
+/* Quote container styles */
+.quote-container {
+    background: linear-gradient(to right, #1e2a38, #2c3e50);
+    padding: 30px;
+    margin: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    width: 100%; /* Make it full width */
+    max-width: 700px; /* Limit max width */
+    height: 80%; /* Make it fill a percentage of the screen */
+    transition: all 0.3s ease;
+    display: flex; /* Center contents */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
-        .quote {
-            font-size: 1.5em;
-            margin-bottom: 15px;
-            font-weight: bold;
-            color: #ecf0f1;
-        }
+.quote {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #ecf0f1;
+    text-align: center; /* Center text */
+}
 
-        .author {
-            text-align: right;
-            font-style: italic;
-            font-size: 1.2em;
-            color: #bdc3c7;
-        }
+.author {
+    text-align: right;
+    font-style: italic;
+    font-size: 1.2em;
+    color: #bdc3c7;
+}
 
-        /* Responsive design */
-        @media (min-width: 600px) {
-            .quote-container {
-                width: 80%;
-            }
-        }
+/* Responsive design */
+@media (min-width: 600px) {
+    .quote-container {
+        width: 90%; /* Adjust width for larger screens */
+    }
+}
 
-        @media (min-width: 900px) {
-            .quote-container {
-                width: 60%;
-            }
-        }
+@media (min-width: 900px) {
+    .quote-container {
+        width: 60%;
+    }
+}
 
-        /* Button styles */
-        .random-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background: linear-gradient(to right, #00bcd4, #4caf50);
-            border: none;
-            border-radius: 50px;
-            color: #fff;
-            font-size: 1.2em;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-        }
+/* Button styles */
+.random-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 24px;
+    background: linear-gradient(to right, #00bcd4, #4caf50);
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 1.2em;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
 
-        .random-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
-        }
+.random-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
 
-        /* Highlighting effect */
-        .highlight {
-            border: 3px solid cyan;
-            animation: highlightEffect 1s ease-out forwards;
-        }
+/* Highlighting effect */
+.highlight {
+    border: 3px solid cyan;
+    animation: highlightEffect 1s ease-out forwards;
+}
 
-        @keyframes highlightEffect {
-            0% {
-                border-color: cyan;
-            }
-            100% {
-                border-color: rgba(44, 62, 80, 0.8);
-            }
-        }
+@keyframes highlightEffect {
+    0% {
+        border-color: cyan;
+    }
+    100% {
+        border-color: rgba(44, 62, 80, 0.8);
+    }
+}
 
-        /* Spacing and padding adjustments */
-        .quote-container p {
-            margin: 0;
-            padding: 0;
-        }
+/* Spacing and padding adjustments */
+.quote-container p {
+    margin: 0;
+    padding: 0;
+}
 
-        /* Adjustments for mobile devices */
-        @media (max-width: 600px) {
-            body {
-                padding: 20px;
-            }
+/* Adjustments for mobile devices */
+@media (max-width: 600px) {
+    body {
+        padding: 20px;
+    }
 
-            h1 {
-                font-size: 2em;
-                margin-bottom: 20px;
-            }
+    h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
 
-            .quote-container {
-                padding: 20px;
-            }
+    .quote-container {
+        padding: 20px;
+    }
 
-            .random-btn {
-                padding: 10px 20px;
-                font-size: 1em;
-            }
-        }
+    .random-btn {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+}
+
     </style>
 </head>
 <body>
