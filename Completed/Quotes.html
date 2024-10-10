@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -5,106 +6,137 @@
     <title>Quotes</title>
     <style>
         /* Global styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(to right, #2c3e50, #34495e);
-    color: #ecf0f1;
-    line-height: 1.8;
-    display: flex;
-    flex-direction: column; /* Stack containers vertically */
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Make body full height */
-    padding: 20px; /* Add padding to body for better spacing */
-    overflow-y: auto; /* Allow scrolling if content exceeds viewport */
-}
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #2c3e50, #34495e);
+            color: #ecf0f1;
+            line-height: 1.8;
+            padding: 40px 20px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            overflow-x: hidden;
+        }
 
-h1 {
-    font-size: 3em;
-    margin-bottom: 20px; /* Adjust margin for better spacing */
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-    color: #ecf0f1;
-    text-align: center;
-}
+        h1 {
+            font-size: 3em;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            color: #ecf0f1;
+            text-align: center;
+        }
 
-/* Quote container styles */
-.quote-container {
-    background: linear-gradient(to right, #1e2a38, #2c3e50);
-    padding: 30px;
-    margin: 20px 0; /* Adjust margin for vertical spacing */
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    width: 90vw; /* Set width relative to viewport */
-    min-height: 150px; /* Set minimum height to ensure visibility */
-    display: flex; /* Center contents */
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
+        /* Quote container styles */
+        .quote-container {
+            background: linear-gradient(to right, #1e2a38, #2c3e50);
+            padding: 30px;
+            margin: 20px auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 700px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
 
-.quote {
-    font-size: 1.5em;
-    margin-bottom: 15px;
-    font-weight: bold;
-    color: #ecf0f1;
-    text-align: center; /* Center text */
-}
+        .quote {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #ecf0f1;
+        }
 
-.author {
-    text-align: right;
-    font-style: italic;
-    font-size: 1.2em;
-    color: #bdc3c7;
-}
+        .author {
+            text-align: right;
+            font-style: italic;
+            font-size: 1.2em;
+            color: #bdc3c7;
+        }
 
-/* Button styles */
-.random-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 12px 24px;
-    background: linear-gradient(to right, #00bcd4, #4caf50);
-    border: none;
-    border-radius: 50px;
-    color: #fff;
-    font-size: 1.2em;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-}
+        /* Responsive design */
+        @media (min-width: 600px) {
+            .quote-container {
+                width: 80%;
+            }
+        }
 
-.random-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
-}
+        @media (min-width: 900px) {
+            .quote-container {
+                width: 60%;
+            }
+        }
 
-/* Highlighting effect */
-.highlight {
-    border: 3px solid cyan;
-}
+        /* Button styles */
+        .random-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(to right, #00bcd4, #4caf50);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
 
-/* Spacing and padding adjustments */
-.quote-container p {
-    margin: 0;
-    padding: 0;
-}
+        .random-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+        }
 
-/* Adjustments for mobile devices */
-h1 {
-    font-size: 2em;
-}
+        /* Highlighting effect */
+        .highlight {
+            border: 3px solid cyan;
+            animation: highlightEffect 1s ease-out forwards;
+        }
 
-.random-btn {
-    padding: 10px 20px;
-    font-size: 1em;
-}
+        @keyframes highlightEffect {
+            0% {
+                border-color: cyan;
+            }
+            100% {
+                border-color: rgba(44, 62, 80, 0.8);
+            }
+        }
 
+        /* Spacing and padding adjustments */
+        .quote-container p {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Adjustments for mobile devices */
+        @media (max-width: 600px) {
+            body {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+                margin-bottom: 20px;
+            }
+
+            .quote-container {
+                padding: 20px;
+            }
+
+            .random-btn {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+        }
     </style>
 </head>
 <body>
