@@ -21,6 +21,8 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh; /* Make body full height */
+    padding: 20px; /* Add padding to body for better spacing */
+    overflow-y: auto; /* Allow scrolling if content exceeds viewport */
 }
 
 h1 {
@@ -39,7 +41,7 @@ h1 {
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     width: 90vw; /* Set width relative to viewport */
-    height: 80vh; /* Set height relative to viewport */
+    min-height: 150px; /* Set minimum height to ensure visibility */
     display: flex; /* Center contents */
     flex-direction: column;
     justify-content: center;
@@ -92,6 +94,17 @@ h1 {
     margin: 0;
     padding: 0;
 }
+
+/* Adjustments for mobile devices */
+h1 {
+    font-size: 2em;
+}
+
+.random-btn {
+    padding: 10px 20px;
+    font-size: 1em;
+}
+
     </style>
 </head>
 <body>
