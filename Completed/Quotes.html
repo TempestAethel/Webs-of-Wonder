@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,6 +8,7 @@
         body {
             margin: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -19,11 +21,6 @@
             margin-bottom: 20px;
             font-size: 2em;
             color: #00cccc;
-            border: 2px solid #009999;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            display: inline-block; /* Makes the border wrap around the text */
         }
         .quote-box {
             padding: 20px;
@@ -42,17 +39,32 @@
             font-size: 1.2em;
             color: #00cccc;
         }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #ffffff;
+            background-color: #009999;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #007f7f;
+        }
     </style>
 </head>
 <body>
-    <h1>Quote</h1>
+    <h1>Random Quote</h1>
     <div class="quote-box" id="quoteBox">
         <div class="quote" id="quote"></div>
         <div class="author" id="author"></div>
     </div>
 
+    <button onclick="displayRandomQuote()">New Quote</button>
+
     <script>
-        const quotes = [
+         const quotes = [
          {"quote": "The future belongs to those who believe in the beauty of their dreams.", "author": "Eleanor Roosevelt"},
      {"quote": "What we do today, right now, will have an accumulated effect on all our tomorrows.", "author": "Alexandra Stoddard"},
     {"quote": "A journey of a thousand miles begins with a single step.", "author": "Lao Tzu"},
@@ -307,7 +319,7 @@
 {"quote": "Your life does not get better by chance, it gets better by change.", "author": "Jim Rohn"},
 {"quote": "Your limitation—it’s only your imagination.", "author": "Anonymous"},
 {"quote": "Your time is limited, don’t waste it living someone else’s life.", "author": "Steve Jobs"}
-               ]
+               ];
 
         function displayRandomQuote() {
             const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -315,7 +327,6 @@
             document.getElementById('quote').innerText = selectedQuote.quote;
             document.getElementById('author').innerText = `— ${selectedQuote.author}`;
         }
-
         // Display a random quote on page load
         window.onload = displayRandomQuote;
     </script>
