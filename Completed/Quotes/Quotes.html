@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -73,6 +74,7 @@
             text-align: center;
             color: #fff;
             font-weight: bold;
+            cursor: pointer;
         }
 
         .content-wrapper:hover {
@@ -100,34 +102,33 @@
         <div class="content-wrapper" onclick="displayRandomQuote()">Random</div>
     </div>
 
-<script>
-   async function fetchQuotes() {
-    const response = await fetch('quotes.json');
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-    return await response.json();
-}
+    <script>
+        async function fetchQuotes() {
+            const response = await fetch('quotes.json');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return await response.json();
+        }
 
-async function displayRandomQuote() {
-    try {
-        const quotes = await fetchQuotes();
-        const randomIndex = Math.floor(Math.random() * quotes.length);
-        const randomQuote = quotes[randomIndex];
-        
-        // Update the quote and author in the DOM
-        document.getElementById('quote').textContent = `"${randomQuote.quote}"`;
-        document.getElementById('author').textContent = `- ${randomQuote.author}`;
-    } catch (error) {
-        console.error('Error fetching quotes:', error);
-        document.getElementById('quote').textContent = "Error loading quote.";
-        document.getElementById('author').textContent = "";
-    }
-}
+        async function displayRandomQuote() {
+            try {
+                const quotes = await fetchQuotes();
+                const randomIndex = Math.floor(Math.random() * quotes.length);
+                const randomQuote = quotes[randomIndex];
+                
+                // Update the quote and author in the DOM
+                document.getElementById('quote').textContent = `"${randomQuote.quote}"`;
+                document.getElementById('author').textContent = `- ${randomQuote.author}`;
+            } catch (error) {
+                console.error('Error fetching quotes:', error);
+                document.getElementById('quote').textContent = "Error loading quote.";
+                document.getElementById('author').textContent = "";
+            }
+        }
 
-// Display a random quote when the page loads
-window.onload = displayRandomQuote;
-</script>
-
+        // Display a random quote when the page loads
+        window.onload = displayRandomQuote;
+    </script>
 </body>
 </html>
