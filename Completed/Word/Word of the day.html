@@ -1,0 +1,179 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word of the Day</title>
+    <style>
+        /* Main Body and Background */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e; /* Dark grey background */
+            color: #dcdcdc; /* Light grey text */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Gradient Background */
+        .gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: repeating-linear-gradient(
+                45deg,
+                #404040,
+        #404040 10px,
+        #808080 10px,
+        #808080 20px
+
+            );
+        }
+
+        /* Main Container */
+        .container {
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #00FFFF; /* Cyan for the title */
+        }
+
+        .word {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #ffffff; /* White for the word */
+        }
+
+        .info {
+            text-align: left;
+            margin-bottom: 2rem;
+            background-color: #2e2e2e; /* Dark grey for info box */
+            color: #dcdcdc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid #008080; /* Teal border */
+        }
+
+        .info p {
+            margin: 0.5rem 0;
+        }
+
+        /* Button Styling with Gradient Border */
+        .gradient-border {
+            background-image: linear-gradient(45deg, #ff8a00, #e52e71);
+            border-radius: 16px;
+            padding: 10px;
+            display: inline-block;
+        }
+
+        .content-wrapper {
+            background: #333333; /* Dark grey button background */
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            padding: 15px 40px;
+            text-align: center;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .content-wrapper:hover {
+            background: #00bfa5; /* Cyan button hover */
+            color: #121212; /* Dark text on hover */
+        }
+
+        /* Button Position */
+        .random-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="gradient"></div> <!-- Full background gradient -->
+
+    <div class="container">
+        <h1>Word of the Day</h1>
+        <div class="word" id="word">Loading...</div>
+        <div class="info" id="info">Fetching information...</div>
+    </div>
+    
+    <div class="random-btn">
+        <div class="gradient-border">
+            <div class="content-wrapper" onclick="displayRandomWord()">Random</div>
+        </div>
+    </div>
+
+    <script>
+        
+        let wordDataCache = [];
+
+        async function fetchWordDefinition(word) {
+            try {
+                const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+                if (!response.ok) {
+                    return null;
+                }
+                return await response.json();
+            } catch (error) {
+                return null; // Handle errors silently and return null
+            }
+        }
+
+        async function prefetchWords() {
+            for (let word of words) {
+                const data = await fetchWordDefinition(word);
+                if (data && data.length > 0) {
+                    wordDataCache.push(data[0]);
+                }
+            }
+        }
+
+        function displayWordData(data) {
+            const wordElement = document.getElementById('word');
+            const infoElement = document.getElementById('info');
+            const { word, phonetic, meanings } = data;
+
+            wordElement.textContent = word;
+            let infoHtml = `<p><strong>Phonetic:</strong> ${phonetic || 'N/A'}</p>`;
+
+            meanings.forEach(meaning => {
+                infoHtml += `<p><strong>As a ${meaning.partOfSpeech}:</strong></p>`;
+                meaning.definitions.forEach(def => {
+                    infoHtml += `<p>${def.definition}${def.example ? ' E.g., ' + def.example : ''}</p>`;
+                });
+            });
+
+            infoElement.innerHTML = infoHtml;
+        }
+
+        function displayRandomWord() {
+            if (wordDataCache.length > 0) {
+                const randomIndex = Math.floor(Math.random() * wordDataCache.length);
+                const randomWordData = wordDataCache[randomIndex];
+                displayWordData(randomWordData);
+            }
+        }
+
+       window.onload = async () => {
+    await prefetchWords(); // Prefetch the word data
+    displayRandomWord();   // Call random word function after prefetching
+};
+    </script>
+</body>
+</html>
