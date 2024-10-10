@@ -77,9 +77,6 @@
 
         /* Button styles */
         .random-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
             padding: 12px 24px;
             background: linear-gradient(to right, #00bcd4, #4caf50);
             border: none;
@@ -98,16 +95,16 @@
 
         /* Highlighting effect */
         .highlight {
-            border: 3px solid cyan;
+            box-shadow: 0 0 0 3px cyan; /* Using box-shadow instead of border */
             animation: highlightEffect 1s ease-out forwards;
         }
 
         @keyframes highlightEffect {
             0% {
-                border-color: cyan;
+                box-shadow: 0 0 0 3px cyan;
             }
             100% {
-                border-color: rgba(44, 62, 80, 0.8);
+                box-shadow: 0 0 0 0 transparent;
             }
         }
 
@@ -137,6 +134,16 @@
                 font-size: 1em;
             }
         }
+
+        /* Fixed buttons styles */
+        .fixed-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Spacing between buttons */
+        }
     </style>
 </head>
 <body>
@@ -144,6 +151,31 @@
     <h1>Quotes</h1>
 
     <div class="quote-container"> 
+        <p class="quote">"The only real mistake is the one from which we learn nothing."</p>
+        <p class="author">- Henry Ford</p>
+    </div>
+
+    <div class="quote-container"> 
+        <p class="quote">"The future belongs to those who believe in the beauty of their dreams."</p>
+        <p class="author">- Eleanor Roosevelt</p>
+    </div>
+
+    <div class="quote-container"> 
+        <p class="quote">"What we do today, right now, will have an accumulated effect on all our tomorrows."</p>
+        <p class="author">- Alexandra Stoddard</p>
+    </div>
+
+    <div class="quote-container"> 
+        <p class="quote">"A journey of a thousand miles begins with a single step."</p>
+        <p class="author">- Lao Tzu</p>
+    </div>
+
+    <div class="quote-container"> 
+        <p class="quote">"A journey of a thousand miles must begin with a single step."</p>
+        <p class="author">- Lao Tzu</p>
+    </div>
+
+        <div class="quote-container"> 
     <p class="quote">"The future belongs to those who believe in the beauty of their dreams."</p>
     <p class="author">- Eleanor Roosevelt</p>
 </div>
@@ -1463,9 +1495,11 @@
     <p class="author">- Henry Ford</p>
 </div>
 
-
-    <!-- Random button to shuffle containers -->
-    <button class="random-btn" onclick="shuffleQuotes()">Shuffle Quotes</button>
+    <!-- Fixed buttons container -->
+    <div class="fixed-buttons">
+        <button class="random-btn" onclick="RandomQuote()">Random Quote</button>
+        <button class="random-btn" onclick="shuffleQuotes()">Shuffle Quotes</button>
+    </div>
 
     <script>
         // Function to shuffle quote containers
@@ -1486,6 +1520,24 @@
             containersArray.forEach(container => {
                 parent.appendChild(container);
             });
+        }
+
+        // Function to highlight a random quote container and scroll to it
+        function RandomQuote() {
+            const containers = document.querySelectorAll('.quote-container');
+            const randomIndex = Math.floor(Math.random() * containers.length);
+            const randomContainer = containers[randomIndex];
+
+            // Add highlight class
+            randomContainer.classList.add('highlight');
+
+            // Scroll to the highlighted quote
+            randomContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Remove highlight after 1 second
+            setTimeout(() => {
+                randomContainer.classList.remove('highlight');
+            }, 1000);
         }
 
         // Shuffle on page load
