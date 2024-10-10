@@ -109,7 +109,7 @@
     {"quote": "If you can dream it, you can achieve it.", "author": "Zig Ziglar"},
     {"quote": "If you cannot do great things, do small things in a great way.", "author": "Napoleon Hill"},
     {"quote": "If you want to achieve greatness stop asking for permission.", "author": "Anonymous"},
-    {"quote": "If you want to lift yourself up, lift up someone else.", "author": "Booker T. Washington"},
+    {"quote": "If you want to lift yourself up, lift up someone else.", "author":"Booker T. Washington"},
     {"quote": "If you want to live a happy life, tie it to a goal, not to people or things.", "author": "Albert Einstein"},
     {"quote": "In the end, we will remember not the words of our enemies, but the silence of our friends.", "author": "Martin Luther King Jr."},
     {"quote": "In the middle of every difficulty lies opportunity.", "author": "Albert Einstein"},
@@ -321,12 +321,23 @@
 {"quote": "Your time is limited, don’t waste it living someone else’s life.", "author": "Steve Jobs"}
                ];
 
-        function displayRandomQuote() {
-            const randomIndex = Math.floor(Math.random() * quotes.length);
-            const selectedQuote = quotes[randomIndex];
-            document.getElementById('quote').innerText = selectedQuote.quote;
-            document.getElementById('author').innerText = `— ${selectedQuote.author}`;
-        }
+       function displayRandomQuote() {
+    const randomIndex = Math.floor(Math.random() * quotes.length);  // Generates a random number from 0 to quotes.length - 1
+    const selectedQuote = quotes[randomIndex];
+    
+    const quoteElement = document.getElementById('quote');
+    const authorElement = document.getElementById('author');
+    
+    // Check if either quote or author is empty
+    if (!selectedQuote || !selectedQuote.quote || !selectedQuote.author) {
+        // If empty, call the function again to try a new quote
+        displayRandomQuote();
+    } else {
+        quoteElement.innerText = selectedQuote.quote;
+        authorElement.innerText = `— ${selectedQuote.author}`;
+    }
+}
+
         // Display a random quote on page load
         window.onload = displayRandomQuote;
     </script>
