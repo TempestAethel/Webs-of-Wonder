@@ -1,173 +1,231 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Color Slider</title>
+    <title>Decision Maker</title>
     <style>
         body {
+            font-family: 'Arial', sans-serif;
             background: linear-gradient(-45deg, #1a1a1a, #4d4d4d, #808080, #333333);
             background-size: 400% 400%;
             animation: gradient 15s ease infinite;
-            color: white;
-            font-family: 'Arial', sans-serif;
-            text-align: center;
+            color: #fff;
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Center vertically */
+            height: 100vh;
         }
-
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        #menu {
+            background-color: rgba(68, 68, 68, 0.9);
+            border-radius: 12px;
+            padding: 20px;
+            width: 350px; /* Slightly wider */
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
-
         h1 {
+            text-align: center;
             margin-bottom: 20px;
-            font-size: 28px; /* Increased font size for emphasis */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Stronger text shadow */
+            font-size: 30px;
+            text-shadow: 1.25px 1.25px 2px rgba(0, 0, 0, 0.5);
         }
-
-        #colorLabel {
-            font-size: 22px; /* Increased font size */
-            margin: 20px 0;
-            padding: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.3); /* Added border */
-            border-radius: 8px; /* Rounded corners */
-            backdrop-filter: blur(5px); /* Blurred background effect */
-        }
-
-        #grid {
-            display: grid;
-            grid-template-columns: repeat(20, 1fr);
-            gap: 1px;
-            margin-top: 20px;
-            width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            border-radius: 10px; /* Rounded corners for the grid */
-        }
-
-        .color-box {
-            width: 100%;
-            height: 40px; /* Increased height for better visibility */
-            cursor: pointer;
-            border: 1px solid #333; /* Subtle border */
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .color-box:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); /* Enhanced hover effect */
-        }
-
-        #hueSlider {
-            width: 100%;
-            margin: 20px 0;
-            -webkit-appearance: none;
-            background: linear-gradient(to right, 
-                hsl(0, 100%, 50%), 
-                hsl(60, 100%, 50%), 
-                hsl(120, 100%, 50%), 
-                hsl(180, 100%, 50%), 
-                hsl(240, 100%, 50%), 
-                hsl(300, 100%, 50%), 
-                hsl(360, 100%, 50%)
-            );
+        input[type="text"] {
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #666;
             border-radius: 5px;
+            width: 100%;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
         }
-
-        input[type="range"] {
-            height: 10px; /* Slightly taller for easier interaction */
+        input[type="text"]:focus {
+            border-color: #0f0; /* Green border on focus */
+            outline: none;
+        }
+        button {
+            padding: 12px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            width: 100%;
+            background-color: #555;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        button:hover {
+            background-color: #666;
+            transform: translateY(-2px);
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
             margin: 10px 0;
         }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 24px; /* Larger thumb for better accessibility */
-            height: 24px;
-            border-radius: 50%;
-            background: #fff;
-            cursor: pointer;
-            border: 2px solid #333;
-            transition: background 0.2s, transform 0.2s;
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 5px 0;
         }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 24px; /* Consistent size for Firefox */
-            height: 24px;
-            border-radius: 50%;
-            background: #fff;
+        .remove-button {
+            width: 30px;
+            height: 30px;
+            background: #888;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            border: 2px solid #333;
-            transition: background 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center the "X" */
+        }
+        .remove-button:hover {
+            background: #666;
+        }
+        .highlight {
+            border: 2px solid #0f0;
+            background-color: rgba(0, 255, 0, 0.2);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+       .result {
+    margin-top: 20px;
+    font-size: 24px;
+    text-align: center; /* Center-align the text */
+    display: none;
+    color: #0f0; /* Green color for the result */
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 255, 0, 0.1); /* Light green background */
+    border: 2px solid #0f0; /* Green border */
+    border-radius: 10px; /* Rounded corners */
+    padding: 15px; /* Padding for spacing */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+    transition: transform 0.3s, opacity 0.3s; /* Animation effects */
+}
+
+/* Add a class for showing the result with animation */
+.result.show {
+    display: block; /* Ensure it's displayed */
+    opacity: 1; /* Fully visible */
+    transform: translateY(0); /* Start position for animation */
+}
+
+/* Class to animate on show */
+.result.hidden {
+    opacity: 0; /* Start hidden */
+    transform: translateY(-20px); /* Slide in effect */
+}
+
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #444;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            transition: opacity 0.5s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1>Dynamic Color Slider</h1>
-    <div id="colorLabel">Hex Value: #FFFFFF | RGB: (255, 255, 255)</div>
-    <input type="range" id="hueSlider" min="0" max="360" value="0" />
-    <div id="grid"></div>
+    <div id="menu">
+        <h1>Decision Maker</h1>
+        <input type="text" id="choice-input" placeholder="Enter choices, separated by commas">
+        <button id="add-choice">Add Choices</button>
+        <ul id="choice-list"></ul>
+        <button id="make-decision">Make a Decision</button>
+        <div class="result" id="decision-result"></div>
+    </div>
+    <div class="toast" id="toast"></div>
 
     <script>
-        const grid = document.getElementById('grid'); // Get the grid element
-        const hueSlider = document.getElementById('hueSlider'); // Get the hue slider
-        const colorLabel = document.getElementById('colorLabel'); // Get the color label
+        const choiceInput = document.getElementById('choice-input');
+        const addChoiceButton = document.getElementById('add-choice');
+        const choiceList = document.getElementById('choice-list');
+        const makeDecisionButton = document.getElementById('make-decision');
+        const decisionResult = document.getElementById('decision-result');
+        const toast = document.getElementById('toast');
 
-        function generateColors(hue) {
-            grid.innerHTML = ''; // Clear previous colors
-            for (let i = 0; i < 400; i++) { // Loop to create color boxes
-                const saturation = Math.floor((i % 20) * 5.25); // Calculate saturation
-                const lightness = Math.floor(Math.floor(i / 20) * 5.25); // Calculate lightness
-                const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`; // Create HSL color
-                const hexColor = hslToHex(hue, saturation, lightness); // Convert to HEX
-                const rgbColor = hslToRgb(hue, saturation, lightness); // Convert to RGB
-                
-                const colorBox = document.createElement('div'); // Create a color box
-                colorBox.className = 'color-box'; // Set class
-                colorBox.style.backgroundColor = color; // Set background color
+        const choicesSet = new Set();
 
-                colorBox.onclick = () => { // On click, update color info
-                    navigator.clipboard.writeText(hexColor); // Copy HEX to clipboard
-                    colorLabel.textContent = `Hex Value: ${hexColor} | RGB: ${rgbColor}`; // Update label with clicked color
-                };
+        // Pre-fill initial choices
+        const initialChoices = ["Yes", "No", "Maybe", "Maybe Not", "Definitely"];
+        initialChoices.forEach(choice => addChoice(choice));
 
-                grid.appendChild(colorBox); // Add color box to grid
+        function addChoice(choice) {
+            const lowerCaseChoice = choice.toLowerCase();
+            if (!choicesSet.has(lowerCaseChoice)) {
+                choicesSet.add(lowerCaseChoice);
+                const li = document.createElement('li');
+                li.innerHTML = `<input type="checkbox" class="choice" value="${lowerCaseChoice}" checked> ${choice} <button class="remove-button">X</button>`;
+                choiceList.appendChild(li);
+
+                const removeButton = li.querySelector('.remove-button');
+                removeButton.addEventListener('click', () => {
+                    choicesSet.delete(lowerCaseChoice);
+                    choiceList.removeChild(li);
+                    showToast(`${choice} removed`);
+                });
+            } else {
+                showToast(`${choice} is a duplicate!`);
             }
         }
 
-        function hslToHex(h, s, l) { // Convert HSL to HEX
-            s /= 100;
-            l /= 100;
-            const a = s * Math.min(l, 1 - l);
-            const f = (n) => {
-                const k = (n + h / 30) % 12;
-                return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))));
-            };
-            const r = f(0), g = f(8), b = f(4);
-            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
-        }
-
-        function hslToRgb(h, s, l) { // Convert HSL to RGB
-            s /= 100;
-            l /= 100;
-            const a = s * Math.min(l, 1 - l);
-            const f = (n) => {
-                const k = (n + h / 30) % 12;
-                return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))));
-            };
-            return `${f(0)}, ${f(8)}, ${f(4)}`; // Return RGB string
-        }
-
-        hueSlider.addEventListener('input', () => { // Listen for input changes on the slider
-            generateColors(hueSlider.value); // Regenerate colors based on the new hue
+        addChoiceButton.addEventListener('click', () => {
+            const input = choiceInput.value.split(',').map(choice => choice.trim()).filter(choice => choice);
+            input.forEach(choice => addChoice(choice));
+            choiceInput.value = ''; // Clear the input
         });
 
-        generateColors(0); // Initialize the grid with the default hue
-    </script>
+        makeDecisionButton.addEventListener('click', () => {
+    const checkedChoices = Array.from(choiceList.querySelectorAll('input[type="checkbox"]:checked'))
+        .map(input => input.value);
+    if (checkedChoices.length > 0) {
+        const randomChoice = checkedChoices[Math.floor(Math.random() * checkedChoices.length)];
+        decisionResult.textContent = `Decision: ${randomChoice.charAt(0).toUpperCase() + randomChoice.slice(1)}`; // Capitalize the first letter
+        decisionResult.classList.add('highlight', 'show');
+        decisionResult.classList.remove('hidden');
+    } else {
+        showToast('No choices selected!');
+        decisionResult.classList.remove('show');
+        decisionResult.classList.add('hidden');
+    }
+});
 
+        function showToast(message) {
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.opacity = 0;
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                    toast.style.opacity = 1;
+                }, 500);
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
